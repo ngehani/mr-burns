@@ -71,31 +71,31 @@ func TestLinks(t *testing.T) {
 	assert.Equal(t, []string{"foo", "bar"}, links)
 }
 
-func TestIsPumba_True(t *testing.T) {
+func TestIsTest_True(t *testing.T) {
 	c := Container{
 		containerInfo: &dockerclient.ContainerInfo{
 			Config: &dockerclient.ContainerConfig{
-				Labels: map[string]string{"com.gaiaadm.pumba": "true"},
+				Labels: map[string]string{"test": "true"},
 			},
 		},
 	}
 
-	assert.True(t, c.IsPumba())
+	assert.True(t, c.IsTest())
 }
 
-func TestIsPumba_WrongLabelValue(t *testing.T) {
+func TestIsTest_WrongLabelValue(t *testing.T) {
 	c := Container{
 		containerInfo: &dockerclient.ContainerInfo{
 			Config: &dockerclient.ContainerConfig{
-				Labels: map[string]string{"com.gaiaadm.pumba": "false"},
+				Labels: map[string]string{"test": "false"},
 			},
 		},
 	}
 
-	assert.False(t, c.IsPumba())
+	assert.False(t, c.IsTest())
 }
 
-func TestIsPumba_NoLabel(t *testing.T) {
+func TestIsTest_NoLabel(t *testing.T) {
 	c := Container{
 		containerInfo: &dockerclient.ContainerInfo{
 			Config: &dockerclient.ContainerConfig{
@@ -104,24 +104,24 @@ func TestIsPumba_NoLabel(t *testing.T) {
 		},
 	}
 
-	assert.False(t, c.IsPumba())
+	assert.False(t, c.IsTest())
 }
 
-func TestStopSignal_Present(t *testing.T) {
+func TestRunInterval_Present(t *testing.T) {
 	c := Container{
 		containerInfo: &dockerclient.ContainerInfo{
 			Config: &dockerclient.ContainerConfig{
 				Labels: map[string]string{
-					"com.gaiaadm.pumba.stop-signal": "SIGQUIT",
+					"test.run.interval": "300000",
 				},
 			},
 		},
 	}
 
-	assert.Equal(t, "SIGQUIT", c.StopSignal())
+	assert.Equal(t, "300000", c.RunInterval())
 }
 
-func TestStopSignal_NoLabel(t *testing.T) {
+func TestRunInterval_NoLabel(t *testing.T) {
 	c := Container{
 		containerInfo: &dockerclient.ContainerInfo{
 			Config: &dockerclient.ContainerConfig{
@@ -130,5 +130,5 @@ func TestStopSignal_NoLabel(t *testing.T) {
 		},
 	}
 
-	assert.Equal(t, "", c.StopSignal())
+	assert.Equal(t, "", c.RunInterval())
 }

@@ -17,7 +17,7 @@ const (
 // results from a call to the ListContainers() method on the Client.
 type Filter func(Container) bool
 
-// A Client is the interface through which Pumba interacts with the Docker API.
+// A Client is the interface through which mr-burns interacts with the Docker API.
 type Client interface {
 	ListContainers(Filter) ([]Container, error)
 	StopContainer(Container, time.Duration) error
@@ -75,7 +75,7 @@ func (client dockerClient) ListContainers(fn Filter) ([]Container, error) {
 }
 
 func (client dockerClient) KillContainer(c Container, signal string) error {
-	log.Infof("Killing %s (%s) with signal $s", c.Name(), c.ID(), signal)
+	log.Infof("Killing %s (%s) with signal %s", c.Name(), c.ID(), signal)
 	if err := client.api.KillContainer(c.ID(), signal); err != nil {
 		return err
 	}
@@ -83,14 +83,10 @@ func (client dockerClient) KillContainer(c Container, signal string) error {
 }
 
 func (client dockerClient) StopContainer(c Container, timeout time.Duration) error {
-	signal := c.StopSignal()
-	if signal == "" {
-		signal = defaultStopSignal
-	}
 
-	log.Infof("Stopping %s (%s) with %s", c.Name(), c.ID(), signal)
+	log.Infof("Stopping %s (%s)", c.Name(), c.ID())
 
-	if err := client.api.KillContainer(c.ID(), signal); err != nil {
+	if err := client.api.KillContainer(c.ID(), defaultStopSignal); err != nil {
 		return err
 	}
 

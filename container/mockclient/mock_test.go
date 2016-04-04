@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/gaia-adm/pumba/container"
+	"github.com/gaia-adm/mr-burns/container"
 )
 
 func TestMockInterface(t *testing.T) {

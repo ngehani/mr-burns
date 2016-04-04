@@ -76,6 +76,14 @@ func (c Container) IsTest() bool {
 	return ok && val == "true"
 }
 
+func (c Container) RunInterval() string {
+	if val, ok := c.containerInfo.Config.Labels[intervalLabel]; ok {
+		return val
+	}
+
+	return ""
+}
+
 // Ideally, we'd just be able to take the ContainerConfig from the old container
 // and use it as the starting point for creating the new container; however,
 // the ContainerConfig that comes back from the Inspect call merges the default

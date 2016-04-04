@@ -136,35 +136,6 @@ func TestKillContainer_DefaultSuccess(t *testing.T) {
 	api.AssertExpectations(t)
 }
 
-func TestStopContainer_CustomSignalSuccess(t *testing.T) {
-	c := Container{
-		containerInfo: &dockerclient.ContainerInfo{
-			Name: "foo",
-			Id:   "abc123",
-			Config: &dockerclient.ContainerConfig{
-				Labels: map[string]string{"com.gaiaadm.pumba.stop-signal": "SIGUSR1"}},
-		},
-	}
-
-	ci := &dockerclient.ContainerInfo{
-		State: &dockerclient.State{
-			Running: false,
-		},
-	}
-
-	api := mockclient.NewMockClient()
-	api.On("KillContainer", "abc123", "SIGUSR1").Return(nil)
-	api.On("InspectContainer", "abc123").Return(ci, nil).Once()
-	api.On("RemoveContainer", "abc123", true, false).Return(nil)
-	api.On("InspectContainer", "abc123").Return(&dockerclient.ContainerInfo{}, errors.New("Not Found"))
-
-	client := dockerClient{api: api}
-	err := client.StopContainer(c, time.Second)
-
-	assert.NoError(t, err)
-	api.AssertExpectations(t)
-}
-
 func TestStopContainer_KillContainerError(t *testing.T) {
 	c := Container{
 		containerInfo: &dockerclient.ContainerInfo{
@@ -315,23 +286,6 @@ func TestRenameContainer_Error(t *testing.T) {
 	api.AssertExpectations(t)
 }
 
-func TestRemoveImage_Success(t *testing.T) {
-	c := Container{
-		imageInfo: &dockerclient.ImageInfo{
-			Id: "abc123",
-		},
-	}
-
-	api := mockclient.NewMockClient()
-	api.On("RemoveImage", "abc123", false).Return([]*dockerclient.ImageDelete{}, nil)
-
-	client := dockerClient{api: api}
-	err := client.RemoveImage(c, false)
-
-	assert.NoError(t, err)
-	api.AssertExpectations(t)
-}
-
 func TestRemoveContainer_Success(t *testing.T) {
 	c := Container{
 		containerInfo: &dockerclient.ContainerInfo{
@@ -349,20 +303,3 @@ func TestRemoveContainer_Success(t *testing.T) {
 	api.AssertExpectations(t)
 }
 
-func TestRemoveImage_Error(t *testing.T) {
-	c := Container{
-		imageInfo: &dockerclient.ImageInfo{
-			Id: "abc123",
-		},
-	}
-
-	api := mockclient.NewMockClient()
-	api.On("RemoveImage", "abc123", false).Return([]*dockerclient.ImageDelete{}, errors.New("oops"))
-
-	client := dockerClient{api: api}
-	err := client.RemoveImage(c, false)
-
-	assert.Error(t, err)
-	assert.EqualError(t, err, "oops")
-	api.AssertExpectations(t)
-}
