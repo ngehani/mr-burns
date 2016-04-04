@@ -53,7 +53,6 @@ func (client dockerClient) ListContainers(fn Filter) ([]Container, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	for _, runningContainer := range runningContainers {
 		containerInfo, err := client.api.InspectContainer(runningContainer.Id)
 		if err != nil {
