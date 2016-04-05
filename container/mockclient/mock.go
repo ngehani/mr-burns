@@ -12,6 +12,10 @@ type MockClient struct {
 	mock.Mock
 }
 
+func NewMockClient() *MockClient {
+	return &MockClient{}
+}
+
 // ListContainers mock
 func (m *MockClient) ListContainers(cf container.Filter) ([]container.Container, error) {
 	args := m.Called(cf)
