@@ -1,10 +1,10 @@
-package container
+package dockerclient
 
 import (
 	"testing"
 	"github.com/fsouza/go-dockerclient"
 	"github.com/stretchr/testify/assert"
-	"github.com/gaia-adm/mr-burns/container/mockclient"
+	"github.com/gaia-adm/mr-burns/dockerclient/mockclient"
 	"errors"
 	"github.com/stretchr/testify/mock"
 )

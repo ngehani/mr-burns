@@ -1,4 +1,4 @@
-package container
+package dockerclient
 
 import (
 	log "github.com/Sirupsen/logrus"
@@ -7,16 +7,27 @@ import (
 
 
 // A Client is the interface through which mr-burns interacts with the Docker API.
-type burnsDockerClient interface {
+type BurnsDockerClient interface {
 	ListContainers(opts docker.ListContainersOptions) ([]Container, error)
+	ListImages(opts docker.ListImagesOptions) ([]docker.APIImages, error)
 	StartContainer(Container) error
 	RemoveContainer(Container, bool) error
 }
 
 // NewClient returns a new Client instance which can be used to interact with
 // the Docker API.
-func NewClient(dockerHost string, pullImages bool, cert, key, ca string) burnsDockerClient {
+func NewClientWithTLS(dockerHost string, pullImages bool, cert, key, ca string) BurnsDockerClient {
 	docker, err := docker.NewTLSClient(dockerHost, cert, key, ca)
+
+	if err != nil {
+		log.Fatalf("Error instantiating Docker client: %s", err)
+	}
+
+	return DockerClient{api: docker, pullImages: pullImages}
+}
+
+func NewClient(dockerHost string, pullImages bool) BurnsDockerClient {
+	docker, err := docker.NewClient(dockerHost)
 
 	if err != nil {
 		log.Fatalf("Error instantiating Docker client: %s", err)
@@ -75,4 +86,16 @@ func (client DockerClient) RemoveContainer(c Container, force bool) error {
 
 	log.Infof("Removing container %s", c.ID())
 	return client.api.RemoveContainer(docker.RemoveContainerOptions{c.ID(), true, force})
+}
+
+func (client DockerClient) ListImages(opts docker.ListImagesOptions) ([]docker.APIImages, error) {
+
+	log.Infof("Retrieving images according to opts: %+v", opts)
+
+	ret, err := client.api.ListImages(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	return ret, nil
 }
