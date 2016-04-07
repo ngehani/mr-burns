@@ -1,17 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"github.com/gaia-adm/mr-burns/dockerclient"
-	"github.com/fsouza/go-dockerclient"
+	"github.com/gaia-adm/mr-burns/testrunner"
 )
 
 func main() {
 
-	endpoint := "unix:///var/run/docker.sock"
+	endpoint := "http://gaia-local.skydns.local:2375"
 	client := dockerclient.NewClient(endpoint, true)
-	imgs, _ := client.ListImages(docker.ListImagesOptions{All: false, Filters:map[string][]string{"label": {"test="}}})
-	for _, img := range imgs {
-		fmt.Println("img: %+v", img)
-	}
+	testrunner.RunTestContainers(client)
 }
