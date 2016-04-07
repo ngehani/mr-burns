@@ -1,60 +1,47 @@
 package container
 
 import (
-	"crypto/tls"
-	"fmt"
-	"time"
-
 	log "github.com/Sirupsen/logrus"
-	"github.com/samalba/dockerclient"
+	"github.com/fsouza/go-dockerclient"
 )
 
-const (
-	defaultStopSignal = "SIGTERM"
-)
-
-// A Filter is a prototype for a function that can be used to filter the
-// results from a call to the ListContainers() method on the Client.
-type Filter func(Container) bool
 
 // A Client is the interface through which mr-burns interacts with the Docker API.
-type Client interface {
-	ListContainers(Filter) ([]Container, error)
-	StopContainer(Container, time.Duration) error
-	KillContainer(Container, string) error
+type burnsDockerClient interface {
+	ListContainers(opts docker.ListContainersOptions) ([]Container, error)
 	StartContainer(Container) error
-	RenameContainer(Container, string) error
 	RemoveContainer(Container, bool) error
 }
 
 // NewClient returns a new Client instance which can be used to interact with
 // the Docker API.
-func NewClient(dockerHost string, tlsConfig *tls.Config, pullImages bool) Client {
-	docker, err := dockerclient.NewDockerClient(dockerHost, tlsConfig)
+func NewClient(dockerHost string, pullImages bool, cert, key, ca string) burnsDockerClient {
+	docker, err := docker.NewTLSClient(dockerHost, cert, key, ca)
 
 	if err != nil {
 		log.Fatalf("Error instantiating Docker client: %s", err)
 	}
 
-	return dockerClient{api: docker, pullImages: pullImages}
+	return DockerClient{api: docker, pullImages: pullImages}
 }
 
-type dockerClient struct {
-	api        dockerclient.Client
+type DockerClient struct {
+	api        Client
 	pullImages bool
 }
 
-func (client dockerClient) ListContainers(fn Filter) ([]Container, error) {
-	cs := []Container{}
+func (client DockerClient) ListContainers(opts docker.ListContainersOptions) ([]Container, error) {
 
-	log.Debug("Retrieving running containers")
+	ret := []Container{}
+	log.Debug("Retrieving containers according to opts: %s", opts)
 
-	runningContainers, err := client.api.ListContainers(false, false, "")
+	cs, err := client.api.ListContainers(opts)
 	if err != nil {
 		return nil, err
 	}
-	for _, runningContainer := range runningContainers {
-		containerInfo, err := client.api.InspectContainer(runningContainer.Id)
+
+	for _, container := range cs {
+		containerInfo, err := client.api.InspectContainer(container.ID)
 		if err != nil {
 			return nil, err
 		}
@@ -64,90 +51,28 @@ func (client dockerClient) ListContainers(fn Filter) ([]Container, error) {
 			return nil, err
 		}
 
-		c := Container{containerInfo: containerInfo, imageInfo: imageInfo}
-		if fn(c) {
-			cs = append(cs, c)
-		}
+		ret = append(ret, Container{containerInfo: containerInfo, imageInfo: imageInfo})
 	}
 
-	return cs, nil
+	return ret, nil
 }
 
-func (client dockerClient) KillContainer(c Container, signal string) error {
-	log.Infof("Killing %s (%s) with signal %s", c.Name(), c.ID(), signal)
-	if err := client.api.KillContainer(c.ID(), signal); err != nil {
-		return err
-	}
-	return nil
-}
+func (client DockerClient) StartContainer(c Container) error {
 
-func (client dockerClient) StopContainer(c Container, timeout time.Duration) error {
+	log.Infof("Starting %s", c.Name())
 
-	log.Infof("Stopping %s (%s)", c.Name(), c.ID())
-
-	if err := client.api.KillContainer(c.ID(), defaultStopSignal); err != nil {
-		return err
-	}
-
-	// Wait for container to exit, but proceed anyway after the timeout elapses
-	client.waitForStop(c, timeout)
-
-	log.Debugf("Removing container %s", c.ID())
-
-	if err := client.api.RemoveContainer(c.ID(), true, false); err != nil {
-		return err
-	}
-
-	// Wait for container to be removed. In this case an error is a good thing
-	if err := client.waitForStop(c, timeout); err == nil {
-		return fmt.Errorf("Container %s (%s) could not be removed", c.Name(), c.ID())
-	}
-
-	return nil
-}
-
-func (client dockerClient) StartContainer(c Container) error {
-	config := c.runtimeConfig()
-	hostConfig := c.hostConfig()
-	name := c.Name()
-
-	log.Infof("Starting %s", name)
-
-	newContainerID, err := client.api.CreateContainer(config, name, nil)
+	container, err := client.api.CreateContainer(docker.CreateContainerOptions{c.Name(), c.Config(), c.hostConfig()})
 	if err != nil {
 		return err
 	}
 
-	log.Debugf("Starting container %s (%s)", name, newContainerID)
+	log.Debugf("Starting container %s (%s)", c.Name(), container)
 
-	return client.api.StartContainer(newContainerID, hostConfig)
+	return client.api.StartContainer(container.ID, c.hostConfig())
 }
 
-func (client dockerClient) RenameContainer(c Container, newName string) error {
-	log.Debugf("Renaming container %s (%s) to %s", c.Name(), c.ID(), newName)
-	return client.api.RenameContainer(c.ID(), newName)
-}
+func (client DockerClient) RemoveContainer(c Container, force bool) error {
 
-func (client dockerClient) RemoveContainer(c Container, force bool) error {
 	log.Infof("Removing container %s", c.ID())
-	return client.api.RemoveContainer(c.ID(), force, true)
-}
-
-func (client dockerClient) waitForStop(c Container, waitTime time.Duration) error {
-	timeout := time.After(waitTime)
-
-	for {
-		select {
-		case <-timeout:
-			return nil
-		default:
-			if ci, err := client.api.InspectContainer(c.ID()); err != nil {
-				return err
-			} else if !ci.State.Running {
-				return nil
-			}
-		}
-
-		time.Sleep(1 * time.Second)
-	}
+	return client.api.RemoveContainer(docker.RemoveContainerOptions{c.ID(), true, force})
 }

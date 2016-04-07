@@ -3,13 +3,13 @@ package container
 import (
 	"testing"
 
-	"github.com/samalba/dockerclient"
 	"github.com/stretchr/testify/assert"
+	"github.com/fsouza/go-dockerclient"
 )
 
 func TestID(t *testing.T) {
 	c := Container{
-		containerInfo: &dockerclient.ContainerInfo{Id: "foo"},
+		containerInfo: &docker.Container{ID: "foo"},
 	}
 
 	assert.Equal(t, "foo", c.ID())
@@ -17,7 +17,7 @@ func TestID(t *testing.T) {
 
 func TestName(t *testing.T) {
 	c := Container{
-		containerInfo: &dockerclient.ContainerInfo{Name: "foo"},
+		containerInfo: &docker.Container{Name: "foo"},
 	}
 
 	assert.Equal(t, "foo", c.Name())
@@ -25,8 +25,8 @@ func TestName(t *testing.T) {
 
 func TestImageID(t *testing.T) {
 	c := Container{
-		imageInfo: &dockerclient.ImageInfo{
-			Id: "foo",
+		imageInfo: &docker.Image{
+			ID: "foo",
 		},
 	}
 
@@ -35,10 +35,8 @@ func TestImageID(t *testing.T) {
 
 func TestImageName_Tagged(t *testing.T) {
 	c := Container{
-		containerInfo: &dockerclient.ContainerInfo{
-			Config: &dockerclient.ContainerConfig{
-				Image: "foo:latest",
-			},
+		containerInfo: &docker.Container{
+			Image: "foo:latest",
 		},
 	}
 
@@ -47,10 +45,8 @@ func TestImageName_Tagged(t *testing.T) {
 
 func TestImageName_Untagged(t *testing.T) {
 	c := Container{
-		containerInfo: &dockerclient.ContainerInfo{
-			Config: &dockerclient.ContainerConfig{
-				Image: "foo",
-			},
+		containerInfo: &docker.Container{
+			Image: "foo",
 		},
 	}
 
@@ -59,8 +55,8 @@ func TestImageName_Untagged(t *testing.T) {
 
 func TestLinks(t *testing.T) {
 	c := Container{
-		containerInfo: &dockerclient.ContainerInfo{
-			HostConfig: &dockerclient.HostConfig{
+		containerInfo: &docker.Container{
+			HostConfig: &docker.HostConfig{
 				Links: []string{"foo:foo", "bar:bar"},
 			},
 		},
@@ -73,8 +69,8 @@ func TestLinks(t *testing.T) {
 
 func TestIsTest_True(t *testing.T) {
 	c := Container{
-		containerInfo: &dockerclient.ContainerInfo{
-			Config: &dockerclient.ContainerConfig{
+		containerInfo: &docker.Container{
+			Config: &docker.Config{
 				Labels: map[string]string{"test": "true"},
 			},
 		},
@@ -85,8 +81,8 @@ func TestIsTest_True(t *testing.T) {
 
 func TestIsTest_WrongLabelValue(t *testing.T) {
 	c := Container{
-		containerInfo: &dockerclient.ContainerInfo{
-			Config: &dockerclient.ContainerConfig{
+		containerInfo: &docker.Container{
+			Config: &docker.Config{
 				Labels: map[string]string{"test": "false"},
 			},
 		},
@@ -97,8 +93,8 @@ func TestIsTest_WrongLabelValue(t *testing.T) {
 
 func TestIsTest_NoLabel(t *testing.T) {
 	c := Container{
-		containerInfo: &dockerclient.ContainerInfo{
-			Config: &dockerclient.ContainerConfig{
+		containerInfo: &docker.Container{
+			Config: &docker.Config{
 				Labels: map[string]string{},
 			},
 		},
@@ -109,8 +105,8 @@ func TestIsTest_NoLabel(t *testing.T) {
 
 func TestRunInterval_Present(t *testing.T) {
 	c := Container{
-		containerInfo: &dockerclient.ContainerInfo{
-			Config: &dockerclient.ContainerConfig{
+		containerInfo: &docker.Container{
+			Config: &docker.Config{
 				Labels: map[string]string{
 					"test.run.interval": "300000",
 				},
@@ -123,8 +119,8 @@ func TestRunInterval_Present(t *testing.T) {
 
 func TestRunInterval_NoLabel(t *testing.T) {
 	c := Container{
-		containerInfo: &dockerclient.ContainerInfo{
-			Config: &dockerclient.ContainerConfig{
+		containerInfo: &docker.Container{
+			Config: &docker.Config{
 				Labels: map[string]string{},
 			},
 		},
