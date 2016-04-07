@@ -33,7 +33,7 @@ type DockerClient struct {
 func (client DockerClient) ListContainers(opts docker.ListContainersOptions) ([]Container, error) {
 
 	ret := []Container{}
-	log.Debug("Retrieving containers according to opts: %s", opts)
+	log.Infof("Retrieving containers according to opts: %+v", opts)
 
 	cs, err := client.api.ListContainers(opts)
 	if err != nil {
@@ -66,7 +66,7 @@ func (client DockerClient) StartContainer(c Container) error {
 		return err
 	}
 
-	log.Debugf("Starting container %s (%s)", c.Name(), container)
+	log.Debugf("Starting container %s (%+v)", c.Name(), container)
 
 	return client.api.StartContainer(container.ID, c.hostConfig())
 }
