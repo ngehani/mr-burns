@@ -1,2 +1,2 @@
-# mr-burnes
+# mr-burns
 Docker containers controller
