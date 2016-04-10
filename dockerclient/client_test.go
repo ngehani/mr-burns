@@ -162,4 +162,16 @@ func TestStartContainer_StartContainerError(t *testing.T) {
 	api.AssertExpectations(t)
 }
 
+func TestRemoveContainer(t *testing.T) {
+
+	api := mockclient.NewMockClient()
+	api.On("RemoveContainer", docker.RemoveContainerOptions{"foo", true, true}).Return(nil)
+
+	client := DockerClient{api: api}
+	err := client.RemoveContainer("foo", true)
+
+	assert.NoError(t, err)
+	api.AssertExpectations(t)
+}
+
 

@@ -11,7 +11,7 @@ type BurnsDockerClient interface {
 	ListContainers(opts docker.ListContainersOptions) ([]Container, error)
 	ListImages(opts docker.ListImagesOptions) ([]docker.APIImages, error)
 	StartContainer(Container) error
-	RemoveContainer(Container, bool) error
+	RemoveContainer(string, bool) error
 }
 
 // NewClient returns a new Client instance which can be used to interact with
@@ -82,10 +82,10 @@ func (client DockerClient) StartContainer(c Container) error {
 	return client.api.StartContainer(container.ID, c.hostConfig())
 }
 
-func (client DockerClient) RemoveContainer(c Container, force bool) error {
+func (client DockerClient) RemoveContainer(container string, force bool) error {
 
-	log.Infof("Removing container %s", c.ID())
-	return client.api.RemoveContainer(docker.RemoveContainerOptions{c.ID(), true, force})
+	log.Infof("Removing container %s", container)
+	return client.api.RemoveContainer(docker.RemoveContainerOptions{container, true, force})
 }
 
 func (client DockerClient) ListImages(opts docker.ListImagesOptions) ([]docker.APIImages, error) {

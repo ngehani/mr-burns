@@ -18,12 +18,12 @@ func RunTestContainers(client dockerclient.BurnsDockerClient) {
 	}
 }
 
-
 func runTestContainer(client dockerclient.BurnsDockerClient, image docker.APIImages, containerName string) error {
 
 	resultsPath := image.Labels[dockerclient.TestResultsLabel]
 	resultDirName := fmt.Sprintf("/tmp/test-results/%s", containerName)
 	os.MkdirAll(resultDirName, 0700)
+	client.RemoveContainer(containerName, true)
 	c := dockerclient.NewContainer(&docker.Container{
 		Name:        containerName,
 		Config:     &docker.Config{ Image: image.ID },
