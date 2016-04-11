@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"io/ioutil"
+	"bytes"
+	"net/http"
 )
 
 func RunTestContainers(client dockerclient.BurnsDockerClient) {
@@ -33,6 +36,20 @@ func runTestContainer(client dockerclient.BurnsDockerClient, image docker.APIIma
 	if err != nil {
 		log.Fatal(fmt.Sprintf("Failed starting container name: %s.", containerName), err)
 		return err
+	}
+	status, err := client.WaitContainer(containerName)
+	if (status == 0) {
+		containerTestResults, err := ioutil.ReadFile(fmt.Sprintf("%s/TestSuite.txt", resultDirName))
+		if(err != nil) {
+			log.Fatal("Failed to read file", err)
+		}
+		req, err := http.NewRequest("POST", "http://distributor-link:8000", bytes.NewBuffer(containerTestResults))
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+			log.Fatal("Failed to POST container test results", err)
+		}
+		defer resp.Body.Close()
 	}
 
 	return nil

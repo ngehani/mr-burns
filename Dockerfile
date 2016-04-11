@@ -1,7 +1,8 @@
-FROM golang:1.5.3-onbuild
+FROM alpine:3.3
 
-# running golang linter to find problems that the compliter did not find
-RUN go vet ./...
+WORKDIR /go/src/github.com/gaia-adm/mr-burns
 
-# running any test that exist in the project
-RUN go test ./...
+COPY .dist/mr-burns-distributor /usr/bin/mr-burns
+
+CMD ["--help"]
+ENTRYPOINT ["/usr/bin/mr-burns"]

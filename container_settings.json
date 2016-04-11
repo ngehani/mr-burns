@@ -1,8 +1,9 @@
 {
-  "Env" : [ ],
-  "Volumes" : { },
-  "ExposedPorts" : { },
-  "HostConfig" : {
-    "Binds" : [ ]
+  "_comment": "FOR DETAILED FORMAT LOOK AT https://docs.docker.com/reference/api/docker_remote_api_v1.16/#create-a-container",
+  "AttachStdin": true,
+  "OpenStdin": true,
+  "HostConfig": {
+    "Binds": ["/tmp:/tmp"],
+    "Links":["mr-burns-distributor:distributor-link"]
   }
 }
