@@ -3,7 +3,11 @@
   "AttachStdin": true,
   "OpenStdin": true,
   "HostConfig": {
-    "Binds": ["/tmp:/tmp"],
-    "Links":["mr-burns-distributor:distributor-link"]
+    "Binds": [
+      "/tmp:/tmp"
+    ],
+    "Links": [
+      "mr-burns-distributor:mr-burns-distributor"
+    ]
   }
 }
