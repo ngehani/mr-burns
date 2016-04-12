@@ -15,6 +15,7 @@ dependencies:
     # download update_service script
     - curl -LO https://raw.githubusercontent.com/gaia-adm/gaia-fleet/master/update_service.sh && chmod +x update_service.sh
   override:
+    - chmod u+x script/go_build.sh script/go_test.sh
     # create builder image
     - docker build -t mr-burns/builder -f Build.Dockerfile .
     # run go build in a docker container (use /go/src/github.com/gaia-adm/mr-burns as working directory)
