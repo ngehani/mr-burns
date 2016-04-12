@@ -3,7 +3,8 @@
 workdir=.cover
 
 generate_test_coverage_data() {
-    rm -rf "$workdir"
+    
+	rm -rf "$workdir"
     mkdir "$workdir"
     go test -cover -v | go-junit-report > "$workdir/go-results_tests.xml"
 }

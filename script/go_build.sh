@@ -2,6 +2,7 @@
 distdir=.dist
 
 go_build() {
+  
   rm -rf "${distdir}"
   mkdir "${distdir}"
   go get
