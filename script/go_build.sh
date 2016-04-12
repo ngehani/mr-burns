@@ -7,7 +7,7 @@ go_build() {
   mkdir "${distdir}"
   cd main
   go get
-  go build -v -o ${distdir}/mr-burns/main
+  go build -v -o ${distdir}/mr-burns
 }
 
 go_build
