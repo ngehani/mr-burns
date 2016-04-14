@@ -29,6 +29,7 @@ func NewClientWithTLS(dockerHost string, pullImages bool, cert, key, ca string) 
 
 func NewClient(dockerHost string, pullImages bool) BurnsDockerClient {
 	docker, err := docker.NewClient(dockerHost)
+	log.Infof("Docker client: %+v", docker)
 
 	if err != nil {
 		log.Fatalf("Error instantiating Docker client: %s", err)
