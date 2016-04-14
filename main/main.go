@@ -7,7 +7,7 @@ import (
 
 func main() {
 
-	endpoint := "http://gaia-local.skydns.local:2375"
+	endpoint := "unix:///var/run/docker.sock"
 	client := dockerclient.NewClient(endpoint, true)
 	testrunner.RunTestContainers(client)
 }
