@@ -65,7 +65,7 @@ type Client interface {
 	Logs(opts docker.LogsOptions) error
 	ResizeContainerTTY(id string, height, width int) error
 	ExportContainer(opts docker.ExportContainerOptions) error
-	AddEventListener(listener chan<- *docker.APIEvents) error
+	AddEventListener(listener chan <- *docker.APIEvents) error
 	RemoveEventListener(listener chan *docker.APIEvents) error
 	AuthCheck(conf *docker.AuthConfiguration) (docker.AuthStatus, error)
 }

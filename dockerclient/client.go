@@ -15,51 +15,49 @@ type DockerClient interface {
 	WaitContainer(container string) (int, error)
 }
 
-type DockerClientContainer struct {
-	api        Client
-	pullImages bool
+type DockerClientWrapper struct {
+	client Client
 }
 
 // NewClient returns a new Client instance which can be used to interact with
 // the Docker API.
 func NewClientWithTLS(dockerHost string, pullImages bool, cert, key, ca string) DockerClient {
-	docker, err := docker.NewTLSClient(dockerHost, cert, key, ca)
 
+	docker, err := docker.NewTLSClient(dockerHost, cert, key, ca)
 	if err != nil {
 		log.Fatalf("Error instantiating Docker client: %s", err)
 	}
 
-	return DockerClientContainer{api: docker, pullImages: pullImages}
+	return DockerClientWrapper{client: docker}
 }
 
 func NewClient(dockerHost string, pullImages bool) DockerClient {
+
 	docker, err := docker.NewClient(dockerHost)
 	log.Infof("Docker client: %+v", docker)
-
 	if err != nil {
 		log.Fatalf("Error instantiating Docker client: %s", err)
 	}
 
-	return DockerClientContainer{api: docker, pullImages: pullImages}
+	return DockerClientWrapper{client: docker}
 }
 
-func (client DockerClientContainer) ListContainers(opts docker.ListContainersOptions) ([]Container, error) {
+func (wrapper DockerClientWrapper) ListContainers(opts docker.ListContainersOptions) ([]Container, error) {
 
 	ret := []Container{}
 	log.Infof("Retrieving containers according to opts: %+v", opts)
-
-	cs, err := client.api.ListContainers(opts)
+	cs, err := wrapper.client.ListContainers(opts)
 	if err != nil {
 		return nil, err
 	}
 
 	for _, container := range cs {
-		containerInfo, err := client.api.InspectContainer(container.ID)
+		containerInfo, err := wrapper.client.InspectContainer(container.ID)
 		if err != nil {
 			return nil, err
 		}
 
-		imageInfo, err := client.api.InspectImage(containerInfo.Image)
+		imageInfo, err := wrapper.client.InspectImage(containerInfo.Image)
 		if err != nil {
 			return nil, err
 		}
@@ -70,36 +68,36 @@ func (client DockerClientContainer) ListContainers(opts docker.ListContainersOpt
 	return ret, nil
 }
 
-func (client DockerClientContainer) StartContainer(c Container) error {
+func (wrapper DockerClientWrapper) StartContainer(c Container) error {
 
 	log.Infof("Starting %s", c.Name())
 
-	container, err := client.api.CreateContainer(docker.CreateContainerOptions{c.Name(), c.Config(), c.hostConfig()})
+	container, err := wrapper.client.CreateContainer(docker.CreateContainerOptions{c.Name(), c.Config(), c.hostConfig()})
 	if err != nil {
 		return err
 	}
 
 	log.Debugf("Starting container %s (%+v)", c.Name(), container)
 
-	return client.api.StartContainer(container.ID, c.hostConfig())
+	return wrapper.client.StartContainer(container.ID, c.hostConfig())
 }
 
-func (client DockerClientContainer) RemoveContainer(container string, force bool) error {
+func (wrapper DockerClientWrapper) RemoveContainer(container string, force bool) error {
 
 	log.Infof("Removing container %s", container)
-	return client.api.RemoveContainer(docker.RemoveContainerOptions{container, true, force})
+	return wrapper.client.RemoveContainer(docker.RemoveContainerOptions{container, true, force})
 }
 
-func (client DockerClientContainer) WaitContainer(container string) (int, error) {
+func (wrapper DockerClientWrapper) WaitContainer(container string) (int, error) {
 
-	return client.api.WaitContainer(container)
+	return wrapper.client.WaitContainer(container)
 }
 
-func (client DockerClientContainer) ListImages(opts docker.ListImagesOptions) ([]docker.APIImages, error) {
+func (wrapper DockerClientWrapper) ListImages(opts docker.ListImagesOptions) ([]docker.APIImages, error) {
 
 	log.Infof("Retrieving images according to opts: %+v", opts)
 
-	ret, err := client.api.ListImages(opts)
+	ret, err := wrapper.client.ListImages(opts)
 	if err != nil {
 		return nil, err
 	}
