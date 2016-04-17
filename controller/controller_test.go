@@ -14,5 +14,6 @@ func TestStart(t *testing.T) {
 	img := docker.APIImages{Labels:labels}
 	images := []docker.APIImages{img}
 	mockClient.On("ListImages", mock.Anything).Return(images)
-	Start(mockClient)
+	mockClientWrapper := mockClient.CreateMockClientWrapper()
+	Start(mockClientWrapper)
 }

@@ -18,7 +18,7 @@ func TestListContainers_Success(t *testing.T) {
 	api.On("InspectContainer", "foo").Return(ci, nil)
 	api.On("InspectImage", "abc123").Return(ii, nil)
 
-	client := DockerClientWrapper{api: api}
+	client := api.CreateMockClientWrapper()
 	cs, err := client.ListContainers(lco)
 
 	assert.NoError(t, err)
@@ -37,7 +37,7 @@ func TestListContainers_Filter(t *testing.T) {
 	api.On("InspectContainer", "foo").Return(ci, nil)
 	api.On("InspectImage", "abc123").Return(ii, nil)
 
-	client := DockerClientWrapper{api: api}
+	client := api.CreateMockClientWrapper()
 	cs, err := client.ListContainers(lco)
 
 	assert.NoError(t, err)
@@ -52,7 +52,7 @@ func TestListContainers_ListError(t *testing.T) {
 	lco := docker.ListContainersOptions{All:false, Size:false}
 	api.On("ListContainers", lco).Return([]docker.APIContainers{}, errors.New("oops"))
 
-	client := DockerClientWrapper{api: api}
+	client := api.CreateMockClientWrapper()
 	_, err := client.ListContainers(lco)
 
 	assert.Error(t, err)
@@ -67,7 +67,7 @@ func TestListContainers_InspectContainerError(t *testing.T) {
 	api.On("ListContainers", lco).Return([]docker.APIContainers{{ID: "foo", Names:[]string{"bar"}}}, nil)
 	api.On("InspectContainer", "foo").Return(&docker.Container{}, errors.New("uh-oh"))
 
-	client := DockerClientWrapper{api: api}
+	client := api.CreateMockClientWrapper()
 	_, err := client.ListContainers(lco)
 
 	assert.Error(t, err)
@@ -85,7 +85,7 @@ func TestListContainers_InspectImageError(t *testing.T) {
 	api.On("InspectContainer", "foo").Return(ci, nil)
 	api.On("InspectImage", "abc123").Return(ii, errors.New("whoops"))
 
-	client := DockerClientWrapper{api: api}
+	client := api.CreateMockClientWrapper()
 	_, err := client.ListContainers(lco)
 
 	assert.Error(t, err)
@@ -99,6 +99,7 @@ func createDummyContainerInfo() *docker.Container {
 }
 
 func TestStartContainer_Success(t *testing.T) {
+
 	c := Container{
 		containerInfo: &docker.Container{
 			ID: "def789",
@@ -110,13 +111,12 @@ func TestStartContainer_Success(t *testing.T) {
 			Config: &docker.Config{},
 		},
 	}
-
 	api := NewMockClient()
 	api.On("CreateContainer",
 		mock.Anything).Return(c.containerInfo, nil)
 	api.On("StartContainer", "def789", mock.Anything).Return(nil)
 
-	client := DockerClientWrapper{api: api}
+	client := api.CreateMockClientWrapper()
 	err := client.StartContainer(c)
 
 	assert.NoError(t, err)
@@ -124,6 +124,7 @@ func TestStartContainer_Success(t *testing.T) {
 }
 
 func TestStartContainer_CreateContainerError(t *testing.T) {
+
 	c := Container{
 		containerInfo: &docker.Container{
 			ID: "def789",
@@ -132,11 +133,10 @@ func TestStartContainer_CreateContainerError(t *testing.T) {
 			HostConfig: &docker.HostConfig{},
 		},
 	}
-
 	api := NewMockClient()
 	api.On("CreateContainer", mock.Anything).Return(c.containerInfo, errors.New("oops"))
 
-	client := DockerClientWrapper{api: api}
+	client := api.CreateMockClientWrapper()
 	err := client.StartContainer(c)
 
 	assert.Error(t, err)
@@ -145,6 +145,7 @@ func TestStartContainer_CreateContainerError(t *testing.T) {
 }
 
 func TestStartContainer_StartContainerError(t *testing.T) {
+
 	c := Container{
 		containerInfo: &docker.Container{
 			ID: "def789",
@@ -158,7 +159,7 @@ func TestStartContainer_StartContainerError(t *testing.T) {
 	api.On("CreateContainer", mock.Anything).Return(c.containerInfo, nil)
 	api.On("StartContainer", "def789", mock.Anything).Return(errors.New("whoops"))
 
-	client := DockerClientWrapper{api: api}
+	client := api.CreateMockClientWrapper()
 	err := client.StartContainer(c)
 
 	assert.Error(t, err)
@@ -171,11 +172,9 @@ func TestRemoveContainer(t *testing.T) {
 	api := NewMockClient()
 	api.On("RemoveContainer", docker.RemoveContainerOptions{"foo", true, true}).Return(nil)
 
-	client := DockerClientWrapper{api: api}
+	client := api.CreateMockClientWrapper()
 	err := client.RemoveContainer("foo", true)
 
 	assert.NoError(t, err)
 	api.AssertExpectations(t)
 }
-
-
