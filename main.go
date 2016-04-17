@@ -8,6 +8,6 @@ import (
 func main() {
 
 	endpoint := "unix:///var/run/docker.sock"
-	client := dockerclient.NewClient(endpoint, true)
+	client := dockerclient.NewClient(endpoint)
 	controller.Start(client)
 }
