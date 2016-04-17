@@ -1,4 +1,4 @@
-# Mr. Burns - Docker containers test runner
+# Mr. Burns - Micro services testing framework
 ### Runing Mr. Burns inside Docker container
 If you choose to use Mr. Burns Docker [image](https://hub.docker.com/r/gaiaadm/mr-burns/) on Linux, use the following command:
 ```
