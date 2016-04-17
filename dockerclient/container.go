@@ -7,9 +7,9 @@ import (
 )
 
 const (
-	TestLabel = "test"
-	IntervalLabel = "test.run.interval"
-	TestResultsLabel = "test.results"
+	LabelTest = "test"
+	LabelInterval = "test.run.interval"
+	LabelTestResultPath = "test.results"
 )
 
 // NewContainer returns a new Container instance instantiated with the
@@ -72,12 +72,12 @@ func (c Container) Links() []string {
 // IsTest returns a boolean flag indicating whether or not the current
 // container is a test container.
 func (c Container) IsTest() bool {
-	val, ok := c.containerInfo.Config.Labels[TestLabel]
+	val, ok := c.containerInfo.Config.Labels[LabelTest]
 	return ok && val == "true"
 }
 
 func (c Container) RunInterval() string {
-	if val, ok := c.containerInfo.Config.Labels[IntervalLabel]; ok {
+	if val, ok := c.containerInfo.Config.Labels[LabelInterval]; ok {
 		return val
 	}
 

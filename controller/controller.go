@@ -23,7 +23,7 @@ func Start(client dockerclient.DockerClient) {
 
 func runTestContainer(client dockerclient.DockerClient, image docker.APIImages, containerName string) error {
 
-	resultsPath := image.Labels[dockerclient.TestResultsLabel]
+	resultsPath := image.Labels[dockerclient.LabelTestResultPath]
 	resultDirName := fmt.Sprintf("/tmp/test-results/%s", containerName)
 	os.MkdirAll(resultDirName, 0700)
 	client.RemoveContainer(containerName, true)
