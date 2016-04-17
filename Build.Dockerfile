@@ -11,4 +11,12 @@ RUN apk --update add git bash \
 RUN go get github.com/mitchellh/gox \
     && go get github.com/jstemmer/go-junit-report
 
+ENV RESULT_DIR /src/.cover
+ENV RESULT_FILE go-results_tests.xml
+
+LABEL test=
+LABEL test.results.dir=$RESULT_DIR
+LABEL test.results.file=$RESULT_FILE
+LABEL test.cmd=script/go_test.sh
+
 CMD ["script/go_build.sh"]
