@@ -34,7 +34,7 @@ func runTestContainer(client dockerclient.BurnsDockerClient, image docker.APIIma
 	}, &docker.Image{ID:image.ID, }, )
 	err := client.StartContainer(*c)
 	if err != nil {
-		log.Fatal(fmt.Sprintf("Failed starting container name: %s.", containerName), err)
+		log.Fatal(fmt.Sprintf("Failed starting container: %s.", containerName), err)
 		return err
 	}
 	status, err := client.WaitContainer(containerName)
@@ -50,6 +50,10 @@ func runTestContainer(client dockerclient.BurnsDockerClient, image docker.APIIma
 			log.Fatal("Failed to POST container test results", err)
 		}
 		defer resp.Body.Close()
+	}
+	if err != nil {
+		log.Fatal(fmt.Sprintf("Failed waiting for container: %s.", containerName), err)
+		return err
 	}
 
 	return nil
