@@ -1,7 +1,7 @@
 package dockerclient
 
 import (
-	"github.com/fsouza/go-dockerclient"
+	"github.com/gaia-adm/go-dockerclient"
 )
 
 type Client interface {

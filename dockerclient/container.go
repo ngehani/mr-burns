@@ -3,8 +3,7 @@ package dockerclient
 import (
 	"fmt"
 	"strings"
-
-	"github.com/fsouza/go-dockerclient"
+	"github.com/gaia-adm/go-dockerclient"
 )
 
 const (

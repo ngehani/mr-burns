@@ -2,7 +2,7 @@ package dockerclient
 
 import (
 	"testing"
-	"github.com/fsouza/go-dockerclient"
+	"github.com/gaia-adm/go-dockerclient"
 	"github.com/stretchr/testify/assert"
 	"github.com/gaia-adm/mr-burns/dockerclient/mockclient"
 	"errors"

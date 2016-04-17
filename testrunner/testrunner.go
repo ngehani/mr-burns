@@ -2,7 +2,7 @@ package testrunner
 
 import (
 	"github.com/gaia-adm/mr-burns/dockerclient"
-	"github.com/fsouza/go-dockerclient"
+	"github.com/gaia-adm/go-dockerclient"
 	"fmt"
 	"log"
 	"os"
