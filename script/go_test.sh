@@ -7,6 +7,7 @@ generate_test_coverage_data() {
 	rm -rf "$workdir"
     mkdir "$workdir"
     cd dockerclient
+    go get
     go test -cover -v | go-junit-report > "../$workdir/go-results_tests.xml"
 }
 
