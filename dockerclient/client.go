@@ -7,7 +7,7 @@ import (
 
 
 // A Client is the interface through which mr-burns interacts with the Docker API.
-type BurnsDockerClient interface {
+type DockerClient interface {
 	ListContainers(opts docker.ListContainersOptions) ([]Container, error)
 	ListImages(opts docker.ListImagesOptions) ([]docker.APIImages, error)
 	StartContainer(Container) error
@@ -15,19 +15,24 @@ type BurnsDockerClient interface {
 	WaitContainer(container string) (int, error)
 }
 
+type DockerClientContainer struct {
+	api        Client
+	pullImages bool
+}
+
 // NewClient returns a new Client instance which can be used to interact with
 // the Docker API.
-func NewClientWithTLS(dockerHost string, pullImages bool, cert, key, ca string) BurnsDockerClient {
+func NewClientWithTLS(dockerHost string, pullImages bool, cert, key, ca string) DockerClient {
 	docker, err := docker.NewTLSClient(dockerHost, cert, key, ca)
 
 	if err != nil {
 		log.Fatalf("Error instantiating Docker client: %s", err)
 	}
 
-	return DockerClient{api: docker, pullImages: pullImages}
+	return DockerClientContainer{api: docker, pullImages: pullImages}
 }
 
-func NewClient(dockerHost string, pullImages bool) BurnsDockerClient {
+func NewClient(dockerHost string, pullImages bool) DockerClient {
 	docker, err := docker.NewClient(dockerHost)
 	log.Infof("Docker client: %+v", docker)
 
@@ -35,15 +40,10 @@ func NewClient(dockerHost string, pullImages bool) BurnsDockerClient {
 		log.Fatalf("Error instantiating Docker client: %s", err)
 	}
 
-	return DockerClient{api: docker, pullImages: pullImages}
+	return DockerClientContainer{api: docker, pullImages: pullImages}
 }
 
-type DockerClient struct {
-	api        Client
-	pullImages bool
-}
-
-func (client DockerClient) ListContainers(opts docker.ListContainersOptions) ([]Container, error) {
+func (client DockerClientContainer) ListContainers(opts docker.ListContainersOptions) ([]Container, error) {
 
 	ret := []Container{}
 	log.Infof("Retrieving containers according to opts: %+v", opts)
@@ -70,7 +70,7 @@ func (client DockerClient) ListContainers(opts docker.ListContainersOptions) ([]
 	return ret, nil
 }
 
-func (client DockerClient) StartContainer(c Container) error {
+func (client DockerClientContainer) StartContainer(c Container) error {
 
 	log.Infof("Starting %s", c.Name())
 
@@ -84,18 +84,18 @@ func (client DockerClient) StartContainer(c Container) error {
 	return client.api.StartContainer(container.ID, c.hostConfig())
 }
 
-func (client DockerClient) RemoveContainer(container string, force bool) error {
+func (client DockerClientContainer) RemoveContainer(container string, force bool) error {
 
 	log.Infof("Removing container %s", container)
 	return client.api.RemoveContainer(docker.RemoveContainerOptions{container, true, force})
 }
 
-func (client DockerClient) WaitContainer(container string) (int, error) {
+func (client DockerClientContainer) WaitContainer(container string) (int, error) {
 
 	return client.api.WaitContainer(container)
 }
 
-func (client DockerClient) ListImages(opts docker.ListImagesOptions) ([]docker.APIImages, error) {
+func (client DockerClientContainer) ListImages(opts docker.ListImagesOptions) ([]docker.APIImages, error) {
 
 	log.Infof("Retrieving images according to opts: %+v", opts)
 

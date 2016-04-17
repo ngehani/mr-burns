@@ -18,7 +18,7 @@ func TestListContainers_Success(t *testing.T) {
 	api.On("InspectContainer", "foo").Return(ci, nil)
 	api.On("InspectImage", "abc123").Return(ii, nil)
 
-	client := DockerClient{api: api}
+	client := DockerClientContainer{api: api}
 	cs, err := client.ListContainers(lco)
 
 	assert.NoError(t, err)
@@ -36,7 +36,7 @@ func TestListContainers_Filter(t *testing.T) {
 	api.On("InspectContainer", "foo").Return(ci, nil)
 	api.On("InspectImage", "abc123").Return(ii, nil)
 
-	client := DockerClient{api: api}
+	client := DockerClientContainer{api: api}
 	cs, err := client.ListContainers(lco)
 
 	assert.NoError(t, err)
@@ -50,7 +50,7 @@ func TestListContainers_ListError(t *testing.T) {
 	lco := docker.ListContainersOptions{All:false, Size:false}
 	api.On("ListContainers", lco).Return([]docker.APIContainers{}, errors.New("oops"))
 
-	client := DockerClient{api: api}
+	client := DockerClientContainer{api: api}
 	_, err := client.ListContainers(lco)
 
 	assert.Error(t, err)
@@ -64,7 +64,7 @@ func TestListContainers_InspectContainerError(t *testing.T) {
 	api.On("ListContainers", lco).Return([]docker.APIContainers{{ID: "foo", Names:[]string{"bar"}}}, nil)
 	api.On("InspectContainer", "foo").Return(&docker.Container{}, errors.New("uh-oh"))
 
-	client := DockerClient{api: api}
+	client := DockerClientContainer{api: api}
 	_, err := client.ListContainers(lco)
 
 	assert.Error(t, err)
@@ -81,7 +81,7 @@ func TestListContainers_InspectImageError(t *testing.T) {
 	api.On("InspectContainer", "foo").Return(ci, nil)
 	api.On("InspectImage", "abc123").Return(ii, errors.New("whoops"))
 
-	client := DockerClient{api: api}
+	client := DockerClientContainer{api: api}
 	_, err := client.ListContainers(lco)
 
 	assert.Error(t, err)
@@ -112,7 +112,7 @@ func TestStartContainer_Success(t *testing.T) {
 		mock.Anything).Return(c.containerInfo, nil)
 	api.On("StartContainer", "def789", mock.Anything).Return(nil)
 
-	client := DockerClient{api: api}
+	client := DockerClientContainer{api: api}
 	err := client.StartContainer(c)
 
 	assert.NoError(t, err)
@@ -132,7 +132,7 @@ func TestStartContainer_CreateContainerError(t *testing.T) {
 	api := mockclient.NewMockClient()
 	api.On("CreateContainer", mock.Anything).Return(c.containerInfo, errors.New("oops"))
 
-	client := DockerClient{api: api}
+	client := DockerClientContainer{api: api}
 	err := client.StartContainer(c)
 
 	assert.Error(t, err)
@@ -154,7 +154,7 @@ func TestStartContainer_StartContainerError(t *testing.T) {
 	api.On("CreateContainer", mock.Anything).Return(c.containerInfo, nil)
 	api.On("StartContainer", "def789", mock.Anything).Return(errors.New("whoops"))
 
-	client := DockerClient{api: api}
+	client := DockerClientContainer{api: api}
 	err := client.StartContainer(c)
 
 	assert.Error(t, err)
@@ -167,7 +167,7 @@ func TestRemoveContainer(t *testing.T) {
 	api := mockclient.NewMockClient()
 	api.On("RemoveContainer", docker.RemoveContainerOptions{"foo", true, true}).Return(nil)
 
-	client := DockerClient{api: api}
+	client := DockerClientContainer{api: api}
 	err := client.RemoveContainer("foo", true)
 
 	assert.NoError(t, err)

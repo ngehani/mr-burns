@@ -1,4 +1,4 @@
-package mockclient
+package dockerclient
 
 import (
 	"github.com/stretchr/testify/mock"
@@ -78,7 +78,7 @@ func (client *MockClient) DisconnectNetwork(id string, opts docker.NetworkConnec
 	return args.Error(0)
 }
 
-func (client *MockClient) CreateExec(opts docker.CreateExecOptions) (*docker.Exec, error){
+func (client *MockClient) CreateExec(opts docker.CreateExecOptions) (*docker.Exec, error) {
 	args := client.Mock.Called(opts)
 	return args.Get(0).(*docker.Exec), args.Error(1)
 }
@@ -103,17 +103,17 @@ func (client *MockClient) InspectExec(id string) (*docker.ExecInspect, error) {
 	return args.Get(0).(*docker.ExecInspect), args.Error(1)
 }
 
-func (client *MockClient) Version() (*docker.Env, error){
+func (client *MockClient) Version() (*docker.Env, error) {
 	args := client.Mock.Called()
 	return args.Get(0).(*docker.Env), args.Error(1)
 }
 
-func (client *MockClient) Info() (*docker.DockerInfo, error){
+func (client *MockClient) Info() (*docker.DockerInfo, error) {
 	args := client.Mock.Called()
 	return args.Get(0).(*docker.DockerInfo), args.Error(1)
 }
 
-func (client *MockClient) ListImages(opts docker.ListImagesOptions) ([]docker.APIImages, error){
+func (client *MockClient) ListImages(opts docker.ListImagesOptions) ([]docker.APIImages, error) {
 	args := client.Mock.Called(opts)
 	return args.Get(0).([]docker.APIImages), args.Error(1)
 }
@@ -213,7 +213,7 @@ func (client *MockClient) ContainerChanges(id string) ([]docker.Change, error) {
 	return args.Get(0).([]docker.Change), args.Error(1)
 }
 
-func (client *MockClient) CreateContainer(opts docker.CreateContainerOptions)(*docker.Container, error) {
+func (client *MockClient) CreateContainer(opts docker.CreateContainerOptions) (*docker.Container, error) {
 	args := client.Mock.Called(opts)
 	return args.Get(0).(*docker.Container), args.Error(1)
 }
@@ -313,7 +313,7 @@ func (client *MockClient) ExportContainer(opts docker.ExportContainerOptions) er
 	return args.Error(0)
 }
 
-func (client *MockClient) AddEventListener(listener chan<- *docker.APIEvents) error {
+func (client *MockClient) AddEventListener(listener chan <- *docker.APIEvents) error {
 	args := client.Mock.Called(listener)
 	return args.Error(0)
 }
