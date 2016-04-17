@@ -67,5 +67,5 @@ type Client interface {
 	ExportContainer(opts docker.ExportContainerOptions) error
 	AddEventListener(listener chan<- *docker.APIEvents) error
 	RemoveEventListener(listener chan *docker.APIEvents) error
-	AuthCheck(conf *docker.AuthConfiguration) error
+	AuthCheck(conf *docker.AuthConfiguration) (docker.AuthStatus, error)
 }
