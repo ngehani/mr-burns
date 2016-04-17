@@ -13,7 +13,7 @@ import (
 
 func Start(client dockerclient.DockerClient) {
 
-	//Get images with test label and create containers for them
+	// Get images with test label and create containers for them
 	imgs, _ := client.ListImages(docker.ListImagesOptions{All: false, Filters:map[string][]string{"label": {"test="}}})
 	log.Printf("images: %+v", imgs)
 	for i, img := range imgs {
