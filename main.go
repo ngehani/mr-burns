@@ -22,7 +22,8 @@ func ls() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("current directory: %s", os.Getwd())
+	dir, err := os.Getwd()
+	log.Println("current directory: %s", dir)
 	for _, file := range files {
 		log.Printf("%+v", file)
 	}
