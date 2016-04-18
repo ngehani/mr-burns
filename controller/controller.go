@@ -23,16 +23,14 @@ func Start(client dockerclient.DockerClient) {
 
 func runTestContainer(client dockerclient.DockerClient, image docker.APIImages, containerName string) error {
 
-	containerResultsPath := image.Labels[dockerclient.TestResultsLabel]
-	containerResultsFile := image.Labels[dockerclient.TestResultsFileLabel]
-	containerCmd := image.Labels[dockerclient.TestCmdLabel]
+	resultsPath := image.Labels[dockerclient.LabelTestResultPath]
 	resultDirName := fmt.Sprintf("/tmp/test-results/%s", containerName)
 	os.MkdirAll(resultDirName, 0700)
 	client.RemoveContainer(containerName, true)
 	c := dockerclient.NewContainer(&docker.Container{
 		Name:        containerName,
-		Config:     &docker.Config{Image: image.ID, Cmd:[]string{containerCmd } },
-		HostConfig: &docker.HostConfig{Binds: []string{fmt.Sprintf("%s:%s", resultDirName, containerResultsPath)}},
+		Config:     &docker.Config{Image: image.ID },
+		HostConfig: &docker.HostConfig{Binds: []string{fmt.Sprintf("%s:%s", resultDirName, resultsPath)}},
 	}, &docker.Image{ID:image.ID, }, )
 	err := client.StartContainer(*c)
 	if err != nil {
@@ -41,7 +39,7 @@ func runTestContainer(client dockerclient.DockerClient, image docker.APIImages, 
 	}
 	status, err := client.WaitContainer(containerName)
 	if (status == 0) {
-		containerTestResults, err := ioutil.ReadFile(fmt.Sprintf("%s/%s", resultDirName, containerResultsFile))
+		containerTestResults, err := ioutil.ReadFile(fmt.Sprintf("%s/TestSuite.txt", resultDirName))
 		if (err != nil) {
 			log.Fatal("Failed to read file", err)
 		}

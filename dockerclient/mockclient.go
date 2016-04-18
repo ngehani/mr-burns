@@ -241,18 +241,21 @@ func (client *MockClient) SearchImagesEx(term string, auth docker.AuthConfigurat
 func (client *MockClient) ListContainers(opts docker.ListContainersOptions) ([]docker.APIContainers, error) {
 
 	args := client.Mock.Called(opts)
+
 	return args.Get(0).([]docker.APIContainers), args.Error(1)
 }
 
 func (client *MockClient) UpdateContainer(id string, opts docker.UpdateContainerOptions) error {
 
 	args := client.Mock.Called(id, opts)
+
 	return args.Error(0)
 }
 
 func (client *MockClient) RenameContainer(opts docker.RenameContainerOptions) error {
 
 	args := client.Mock.Called(opts)
+
 	return args.Error(0)
 }
 
@@ -271,6 +274,7 @@ func (client *MockClient) ContainerChanges(id string) ([]docker.Change, error) {
 func (client *MockClient) CreateContainer(opts docker.CreateContainerOptions) (*docker.Container, error) {
 
 	args := client.Mock.Called(opts)
+
 	return args.Get(0).(*docker.Container), args.Error(1)
 }
 
