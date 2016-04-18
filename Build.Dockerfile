@@ -17,6 +17,6 @@ ENV RESULT_FILE go-results_tests.xml
 LABEL test=
 LABEL test.results.dir=$RESULT_DIR
 LABEL test.results.file=$RESULT_FILE
-LABEL test.cmd=script/go_test.sh
+LABEL test.cmd="script/go_test.sh"
 
 CMD ["script/go_build.sh"]
