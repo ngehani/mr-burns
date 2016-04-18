@@ -1,4 +1,5 @@
 #!/bin/sh
+# use :git config --global core.autocrlf true
 # Run go test with coverage and output as junit report
 workdir=.cover
 
