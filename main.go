@@ -10,15 +10,15 @@ import (
 
 func main() {
 
-	ls()
+	ls("script")
 	endpoint := "unix:///var/run/docker.sock"
 	client := dockerclient.NewClient(endpoint)
 	controller.Start(client)
 }
 
-func ls() {
+func ls(dirName string) {
 
-	files, err := ioutil.ReadDir(".")
+	files, err := ioutil.ReadDir(dirName)
 	if err != nil {
 		log.Fatal(err)
 	}
