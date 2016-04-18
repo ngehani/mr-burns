@@ -9,7 +9,9 @@ import (
 const (
 	LabelTest = "test"
 	LabelInterval = "test.run.interval"
-	LabelTestResultPath = "test.results"
+	LabelTestResultPath = "test.results.dir"
+	TestResultsFileLabel = "test.results.file"
+	TestCmdLabel = "test.cmd"
 )
 
 // NewContainer returns a new Container instance instantiated with the
