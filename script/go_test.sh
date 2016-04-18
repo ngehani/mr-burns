@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Run go test with coverage and output as junit report
 workdir=.cover
 
