@@ -5,6 +5,10 @@ RUN apk --update add git bash \
     && rm -rf /var/lib/apt/lists/* \
     && rm /var/cache/apk/*
 
+# install glide package manager
+RUN curl -Ls https://github.com/Masterminds/glide/releases/download/0.10.1/glide-0.10.1-linux-amd64.tar.gz | tar xz -C /tmp \
+ && mv /tmp/linux-amd64/glide /usr/bin/
+ 
 # gox - Go cross compile tool
 # cover - Go code coverage tool
 # go-junit-report - convert Go test into junit.xml format

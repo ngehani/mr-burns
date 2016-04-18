@@ -3,7 +3,7 @@ package dockerclient
 import (
 	"testing"
 	"github.com/stretchr/testify/assert"
-	"github.com/gaia-adm/go-dockerclient"
+	"github.com/fsouza/go-dockerclient"
 )
 
 func TestID(t *testing.T) {

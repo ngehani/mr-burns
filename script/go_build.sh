@@ -5,7 +5,7 @@ go_build() {
   
   rm -rf "${distdir}"
   mkdir "${distdir}"
-  go get
+  glide install
   go build -v -o ${distdir}/mr-burns
 }
 

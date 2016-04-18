@@ -3,7 +3,7 @@ package controller
 import (
 	"testing"
 	"github.com/gaia-adm/mr-burns/dockerclient"
-	"github.com/gaia-adm/go-dockerclient"
+	"github.com/fsouza/go-dockerclient"
 	"github.com/stretchr/testify/mock"
 )
 
