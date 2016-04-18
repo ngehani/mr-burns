@@ -23,7 +23,8 @@ func ls(dirName string) {
 		log.Fatal(err)
 	}
 	dir, err := os.Getwd()
-	log.Println("current directory: %s", dir)
+	log.Printf("current directory: %s", dir)
+	log.Printf("listinf diles on: %s", dirName)
 	for _, file := range files {
 		log.Printf("%+v", file)
 	}
