@@ -9,7 +9,6 @@ import (
 	"io/ioutil"
 	"bytes"
 	"net/http"
-	"image"
 )
 
 func Start(client dockerclient.DockerClient) {
@@ -33,11 +32,15 @@ func runTestContainer(client dockerclient.DockerClient, image docker.APIImages, 
 	if len(containerCmd) > 0 {
 		containerConfig.Cmd = []string{containerCmd }
 	}
-	startContainer(client,
+	err := startContainer(client,
 		containerName,
 		containerConfig,
 		&docker.HostConfig{Binds: []string{fmt.Sprintf("%s:%s", resultDirName, containerResultsPath)}},
 		image)
+	if err != nil {
+		log.Fatal(fmt.Sprintf("Failed starting container: %s.", containerName), err)
+		return err
+	}
 
 	status, err := client.WaitContainer(containerName)
 	if err != nil {
@@ -60,10 +63,8 @@ func startContainer(client dockerclient.DockerClient, containerName string, cont
 		HostConfig: hostConfig,
 	}, &docker.Image{ID:image.ID, }, )
 	err := client.StartContainer(*c)
-	if err != nil {
-		log.Fatal(fmt.Sprintf("Failed starting container: %s.", containerName), err)
-		return err
-	}
+
+	return err
 }
 
 func postResults(resultDirName string, containerResultsFile string) error {
