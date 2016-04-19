@@ -42,10 +42,10 @@ func (controller Controller) Start() {
 
 func (controller Controller) isFinished() bool {
 
-	ret := false
+	ret := true
 	for _, currTask := range controller.taskIdToTask {
 		if TASK_STATE_DONE != currTask.State {
-			ret = true
+			ret = false
 			break
 		}
 	}
