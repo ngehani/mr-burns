@@ -2,7 +2,7 @@ package dockerclient
 
 import (
 	log "github.com/Sirupsen/logrus"
-	"github.com/gaia-adm/go-dockerclient"
+	"github.com/fsouza/go-dockerclient"
 )
 
 

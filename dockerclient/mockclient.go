@@ -2,7 +2,7 @@ package dockerclient
 
 import (
 	"github.com/stretchr/testify/mock"
-	"github.com/gaia-adm/go-dockerclient"
+	"github.com/fsouza/go-dockerclient"
 )
 
 type MockClient struct {
