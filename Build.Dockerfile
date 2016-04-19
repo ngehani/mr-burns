@@ -1,6 +1,7 @@
 FROM golang:1.6-alpine
 
-WORKDIR /go/src/github.com/gaia-adm/mr-burns
+ENV MR_BURNS_DIR /go/src/github.com/gaia-adm/mr-burns/
+WORKDIR $MR_BURNS_DIR
 
 # install Git apk
 RUN apk --update add git bash \
@@ -17,7 +18,7 @@ RUN curl -Ls https://github.com/Masterminds/glide/releases/download/0.10.1/glide
 RUN go get github.com/mitchellh/gox \
     && go get github.com/jstemmer/go-junit-report
 
-ENV RESULT_DIR /src/.cover
+ENV RESULT_DIR $MR_BURNS_DIR/.cover
 ENV RESULT_FILE go-results_tests.xml
 
 LABEL test=
@@ -25,7 +26,7 @@ LABEL test.results.dir=$RESULT_DIR
 LABEL test.results.file=$RESULT_FILE
 LABEL test.cmd=script/go_test.sh
 
-COPY . /go/src/github.com/gaia-adm/mr-burns
+COPY . $MR_BURNS_DIR
 RUN chmod u+x script/go_build.sh script/go_test.sh
 
 CMD ["script/go_build.sh"]
