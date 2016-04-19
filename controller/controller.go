@@ -81,7 +81,7 @@ func (controller Controller) startContainer(task *Task) {
 		image := task.Data.(docker.APIImages)
 		testResultsFilePath, err := controller.docker.RunTests(image, getContainerName(image))
 		if err != nil {
-			log.Print(err)
+			log.Printf("Error while trying to run tests from image: %s. Error: %v", image, err)
 		}else {
 			controller.publish(testResultsFilePath)
 		}

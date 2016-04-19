@@ -42,7 +42,9 @@ func (manager DockerManager) RunTests(image docker.APIImages, containerName stri
 		log.Printf("Failed starting container: %s. Error: %v", containerName, err)
 		return "", err
 	}
+	log.Print("container started")
 	status, err := manager.client.WaitContainer(containerName)
+	log.Print("finish wating status: %d", status)
 	if err != nil {
 		log.Printf("Failed waiting for container: %s. Error: %v", containerName, err)
 		return "", err
@@ -68,7 +70,6 @@ func (manager DockerManager) startContainer(image docker.APIImages, containerNam
 		Config:     containerConfig,
 		HostConfig: hostConfig,
 	}, &docker.Image{ID: image.ID})
-	err := manager.client.StartContainer(*c)
 
-	return err
+	return manager.client.StartContainer(*c)
 }

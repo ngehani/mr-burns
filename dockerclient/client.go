@@ -69,14 +69,12 @@ func (wrapper DockerClientWrapper) ListContainers(opts docker.ListContainersOpti
 
 func (wrapper DockerClientWrapper) StartContainer(c Container) error {
 
-	log.Infof("Starting %s", c.Name())
-
+	log.Infof("Creating container %s", c.Name())
 	container, err := wrapper.client.CreateContainer(docker.CreateContainerOptions{c.Name(), c.Config(), c.hostConfig()})
 	if err != nil {
 		return err
 	}
-
-	log.Debugf("Starting container %s (%+v)", c.Name(), container)
+	log.Infof("Starting container %s (%+v)", c.Name(), container)
 
 	return wrapper.client.StartContainer(container.ID, c.hostConfig())
 }
@@ -95,7 +93,6 @@ func (wrapper DockerClientWrapper) WaitContainer(container string) (int, error) 
 func (wrapper DockerClientWrapper) ListImages(opts docker.ListImagesOptions) ([]docker.APIImages, error) {
 
 	log.Infof("Retrieving images according to opts: %+v", opts)
-
 	ret, err := wrapper.client.ListImages(opts)
 	if err != nil {
 		return nil, err
