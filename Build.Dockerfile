@@ -1,6 +1,6 @@
 FROM golang:1.6-alpine
 
-ENV MR_BURNS_DIR /go/src/github.com/gaia-adm/mr-burns/
+ENV MR_BURNS_DIR /go/src/github.com/gaia-adm/mr-burns
 WORKDIR $MR_BURNS_DIR
 
 # install Git apk
@@ -18,7 +18,7 @@ RUN curl -Ls https://github.com/Masterminds/glide/releases/download/0.10.1/glide
 RUN go get github.com/mitchellh/gox \
     && go get github.com/jstemmer/go-junit-report
 
-ENV RESULT_DIR $MR_BURNS_DIR.cover
+ENV RESULT_DIR $MR_BURNS_DIR/.cover
 ENV RESULT_FILE go-results_tests.xml
 
 LABEL test=
