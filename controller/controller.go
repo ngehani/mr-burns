@@ -2,7 +2,7 @@ package controller
 
 import (
 	"time"
-	"log"
+	log "github.com/Sirupsen/logrus"
 	"github.com/fsouza/go-dockerclient"
 	"net/http"
 	"bytes"
@@ -67,7 +67,7 @@ func (controller Controller) initialize() {
 
 	images, err := controller.docker.GetImages()
 	if err != nil {
-		log.Printf("Failed to get docker images. Error:%v", err)
+		log.Infof("Failed to get docker images. Error: %v", err)
 	}
 	for _, currImage := range images {
 		controller.taskIdToTask[currImage.ID] = newTask(currImage)
@@ -81,7 +81,7 @@ func (controller Controller) startContainer(task *Task) {
 		image := task.Data.(docker.APIImages)
 		testResultsFilePath, err := controller.docker.RunTests(image, getContainerName(image))
 		if err != nil {
-			log.Printf("Error while trying to run tests from image: %s. Error: %v", image, err)
+			log.Infof("Error while trying to run tests from image: %s. Error: %v", image, err)
 		}else {
 			controller.publish(testResultsFilePath)
 		}
@@ -100,21 +100,21 @@ func (controller Controller) setTaskNextRunningTime(task *Task) {
 		task.NextRuntimeMillisecond = 0
 		task.State = TASK_STATE_DONE
 	}
-	log.Printf("Finish running image: %s (Tags: %s). Next run time: %d", image.ID, image.RepoTags, task.NextRuntimeMillisecond)
+	log.Infof("Finish running image: %s (Tags: %s). Next run time: %d", image.ID, image.RepoTags, task.NextRuntimeMillisecond)
 }
 
 func publishResults(testResultsFilePath string) error {
 
 	testResults, err := ioutil.ReadFile(testResultsFilePath)
 	if err != nil {
-		log.Printf("Failed to read test results file. File: %s Error: %v", testResultsFilePath, err)
+		log.Infof("Failed to read test results file. File: %s Error: %v", testResultsFilePath, err)
 		return err
 	}
 	req, err := http.NewRequest("POST", "http://distributor-link:8000", bytes.NewBuffer(testResults))
 	client := &http.Client{}
 	response, err := client.Do(req)
 	if err != nil {
-		log.Print("Failed to POST container test results", err)
+		log.Infof("Failed to POST container test results", err)
 		return err
 	}
 	defer response.Body.Close()

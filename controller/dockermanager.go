@@ -5,7 +5,7 @@ import (
 	"github.com/fsouza/go-dockerclient"
 	"fmt"
 	"os"
-	"log"
+	log "github.com/Sirupsen/logrus"
 	"errors"
 	"path/filepath"
 )
@@ -39,21 +39,21 @@ func (manager DockerManager) RunTests(image docker.APIImages, containerName stri
 	err := manager.startContainer(image, containerName, containerConfig,
 		&docker.HostConfig{Binds: []string{fmt.Sprintf("%s:%s", resultDirName, containerResultsPath)}})
 	if err != nil {
-		log.Printf("Failed starting container: %s. Error: %v", containerName, err)
+		log.Infof("Failed starting container: %s. Error: %v", containerName, err)
 		return "", err
 	}
-	log.Print("container started")
+	log.Infof("container started")
 	status, err := manager.client.WaitContainer(containerName)
-	log.Print("finish wating status: %d", status)
+	log.Infof("finish wating status: %d", status)
 	if err != nil {
-		log.Printf("Failed waiting for container: %s. Error: %v", containerName, err)
+		log.Infof("Failed waiting for container: %s. Error: %v", containerName, err)
 		return "", err
 	}
 	if status != 0 {
 		return "", errors.New(fmt.Sprintf("Failed waiting for container: %s. Status: %v", containerName, status))
 	}
 
-	log.Printf("resultDirName: %s, file: %s", resultDirName, image.Labels[dockerclient.LabelTestResultsFile])
+	log.Infof("resultDirName: %s, file: %s", resultDirName, image.Labels[dockerclient.LabelTestResultsFile])
 	return filepath.Join(resultDirName, image.Labels[dockerclient.LabelTestResultsFile]), nil
 }
 
