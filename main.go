@@ -2,12 +2,12 @@ package main
 
 import (
 	"github.com/gaia-adm/mr-burns/dockerclient"
-	"github.com/gaia-adm/mr-burns/task"
+	"github.com/gaia-adm/mr-burns/controller"
 )
 
 func main() {
 
 	endpoint := "unix:///var/run/docker.sock"
 	client := dockerclient.NewClient(endpoint)
-	task.NewController(task.NewDockerManager(client)).Start()
+	controller.NewController(controller.NewDockerManager(client)).Start()
 }

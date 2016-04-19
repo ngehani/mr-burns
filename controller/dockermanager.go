@@ -1,4 +1,4 @@
-package task
+package controller
 
 import (
 	"github.com/gaia-adm/mr-burns/dockerclient"
