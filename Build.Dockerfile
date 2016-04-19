@@ -25,9 +25,7 @@ LABEL test.results.dir=$RESULT_DIR
 LABEL test.results.file=$RESULT_FILE
 LABEL test.cmd=script/go_test.sh
 
-COPY script script/
-RUN pwd
-RUN ls -la
+COPY . /go/src/github.com/gaia-adm/mr-burns
 RUN chmod u+x script/go_build.sh script/go_test.sh
 
 CMD ["script/go_build.sh"]
