@@ -18,8 +18,8 @@ dependencies:
     - chmod u+x script/go_build.sh script/go_test.sh
     # create builder image
     - docker build -t mr-burns/builder -f Build.Dockerfile .
-    # run go build in a docker container (use /go/src/github.com/gaia-adm/mr-burns as working directory)
-    - docker run --rm -v "$PWD":/go/src/github.com/gaia-adm/mr-burns -w /go/src/github.com/gaia-adm/mr-burns mr-burns/builder script/go_build.sh
+    # run go build in a docker container
+    - docker run --rm -v "$PWD":/go/src/github.com/gaia-adm/mr-burns mr-burns/builder script/go_build.sh
     # create mr-burns docker image
     - docker build -t gaiaadm/mr-burns .
     - docker tag gaiaadm/mr-burns gaiaadm/mr-burns:$CIRCLE_BUILD_NUM-$CIRCLE_BRANCH

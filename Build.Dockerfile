@@ -1,5 +1,7 @@
 FROM golang:1.6-alpine
 
+WORKDIR /go/src/github.com/gaia-adm/mr-burns
+
 # install Git apk
 RUN apk --update add git bash \
     && rm -rf /var/lib/apt/lists/* \
@@ -23,7 +25,7 @@ LABEL test.results.dir=$RESULT_DIR
 LABEL test.results.file=$RESULT_FILE
 LABEL test.cmd=script/go_test.sh
 
-RUN chmod +x script/go_build.sh
-RUN chmod +x script/go_test.sh
+RUN chmod u+x script/go_build.sh
+RUN chmod u+x script/go_test.sh
 
 CMD ["script/go_build.sh"]
