@@ -79,7 +79,7 @@ func (controller Controller) startContainer(task *Task) {
 	task.State = TASK_STATE_RUNNING
 	go func() {
 		image := task.Data.(docker.APIImages)
-		containerName := fmt.Sprintf("%s@mr-burns", image.ID)
+		containerName := fmt.Sprintf("%s@mr-burns", image.RepoTags[0])
 		testResultsFilePath, _ := controller.docker.RunTests(image, containerName)
 		controller.publish(testResultsFilePath)
 		controller.setTaskNextRunningTime(task)
