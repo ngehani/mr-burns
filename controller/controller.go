@@ -92,8 +92,9 @@ func (controller Controller) startContainer(task *Task) {
 func (controller Controller) setTaskNextRunningTime(task *Task) {
 
 	image := task.Data.(docker.APIImages)
-	interval, _ := strconv.ParseInt(controller.docker.GetImageRunningInterval(image), 10, 64)
-	if (interval > 0) {
+	imageInterval := controller.docker.GetImageRunningInterval(image)
+	if (len(imageInterval) > 0) {
+		interval, _ := strconv.ParseInt(imageInterval, 10, 64)
 		task.NextRuntimeMillisecond = getTimeNowMillisecond() + interval
 		task.State = TASK_STATE_WAITING
 	} else {
