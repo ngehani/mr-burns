@@ -34,10 +34,23 @@ func NewController(dockerManager DockerManager) Controller {
 func (controller Controller) Start() {
 
 	controller.initialize()
-	for !controller.stop() {
+	for !controller.stop() && !controller.isFinished() {
 		controller.startWaitingTasks()
 		controller.sleep()
 	}
+}
+
+func (controller Controller) isFinished() bool {
+
+	ret := false
+	for _, currTask := range controller.taskIdToTask {
+		if TASK_STATE_DONE != currTask.State {
+			ret = true
+			break
+		}
+	}
+
+	return ret
 }
 
 func (controller Controller) startWaitingTasks() {
