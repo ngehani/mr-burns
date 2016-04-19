@@ -16,7 +16,7 @@ type Controller struct {
 	taskIdToTask map[string]Task
 	docker       DockerManager
 	sleep        func()
-	publish      func(string) error
+	publish      func(string, string) error
 	stop         func() bool
 }
 
@@ -80,11 +80,12 @@ func (controller Controller) startContainer(task Task) {
 	controller.update(task)
 	go func() {
 		image := task.Data.(docker.APIImages)
-		testResultsFilePath, err := controller.docker.RunTests(image, getContainerName(image))
+		containerName := getContainerName(image)
+		testResultsFilePath, err := controller.docker.RunTests(image, containerName)
 		if err != nil {
 			log.Infof("Error while trying to run tests from image: %s. Error: %v", image, err)
 		}else {
-			controller.publish(testResultsFilePath)
+			controller.publish(containerName, testResultsFilePath)
 		}
 		controller.setTaskNextRunningTime(task)
 	}()
@@ -99,7 +100,6 @@ func (controller Controller) setTaskNextRunningTime(task Task) {
 
 	image := task.Data.(docker.APIImages)
 	imageInterval := controller.docker.GetImageRunningInterval(image)
-	log.Infof("image intrval %v", imageInterval)
 	if (len(imageInterval) > 0) {
 		interval, _ := strconv.ParseInt(imageInterval, 10, 64)
 		task.NextRuntimeMillisecond = getTimeNowMillisecond() + interval
@@ -112,13 +112,14 @@ func (controller Controller) setTaskNextRunningTime(task Task) {
 	log.Infof("Finish running image: %s (Tags: %s). Next run time: %d", image.ID, image.RepoTags, task.NextRuntimeMillisecond)
 }
 
-func publishResults(testResultsFilePath string) error {
+func publishResults(containerName string, testResultsFilePath string) error {
 
 	testResults, err := ioutil.ReadFile(testResultsFilePath)
 	if err != nil {
 		log.Infof("Failed to read test results file. File: %s Error: %v", testResultsFilePath, err)
 		return err
 	}
+	log.Debugf("Container: %s, test results: %s", containerName, string(testResults))
 	req, err := http.NewRequest("POST", "http://distributor-link:8000", bytes.NewBuffer(testResults))
 	client := &http.Client{}
 	response, err := client.Do(req)

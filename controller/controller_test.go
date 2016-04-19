@@ -23,7 +23,7 @@ func TestStartController(t *testing.T) {
 		sleep: func() {
 			waitToPublish.Wait()
 		},
-		publish: func(resultsFilePath string) error {
+		publish: func(containerName string, resultsFilePath string) error {
 			defer waitToPublish.Done()
 			givenResultsFilePath = resultsFilePath
 			return nil

@@ -42,18 +42,16 @@ func (manager DockerManager) RunTests(image docker.APIImages, containerName stri
 		log.Infof("Failed starting container: %s. Error: %v", containerName, err)
 		return "", err
 	}
-	log.Infof("container started")
 	status, err := manager.client.WaitContainer(containerName)
-	log.Infof("finish wating status: %d", status)
 	if err != nil {
 		log.Infof("Failed waiting for container: %s. Error: %v", containerName, err)
 		return "", err
 	}
+	log.Infof("Finish wating for container: %s, status: %d", containerName, status)
 	if status != 0 {
 		return "", errors.New(fmt.Sprintf("Failed waiting for container: %s. Status: %v", containerName, status))
 	}
 
-	log.Infof("resultDirName: %s, file: %s", resultDirName, image.Labels[dockerclient.LabelTestResultsFile])
 	return filepath.Join(resultDirName, image.Labels[dockerclient.LabelTestResultsFile]), nil
 }
 
