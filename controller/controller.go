@@ -58,7 +58,7 @@ func (controller Controller) startWaitingTasks() {
 	for _, currTask := range controller.taskIdToTask {
 		if TASK_STATE_WAITING == currTask.State &&
 		currTask.NextRuntimeMillisecond < getTimeNowMillisecond() {
-			controller.startContainer(&currTask)
+			controller.startContainer(currTask)
 		}
 	}
 }
@@ -74,9 +74,10 @@ func (controller Controller) initialize() {
 	}
 }
 
-func (controller Controller) startContainer(task *Task) {
+func (controller Controller) startContainer(task Task) {
 
-	controller.getTask(task.ID).State = TASK_STATE_RUNNING
+	task.State = TASK_STATE_RUNNING
+	controller.update(task)
 	go func() {
 		image := task.Data.(docker.APIImages)
 		testResultsFilePath, err := controller.docker.RunTests(image, getContainerName(image))
@@ -89,7 +90,12 @@ func (controller Controller) startContainer(task *Task) {
 	}()
 }
 
-func (controller Controller) setTaskNextRunningTime(task *Task) {
+func (controller Controller) update(task Task) {
+
+	controller.taskIdToTask[task.ID] = task
+}
+
+func (controller Controller) setTaskNextRunningTime(task Task) {
 
 	image := task.Data.(docker.APIImages)
 	imageInterval := controller.docker.GetImageRunningInterval(image)
@@ -102,12 +108,8 @@ func (controller Controller) setTaskNextRunningTime(task *Task) {
 		task.NextRuntimeMillisecond = 0
 		task.State = TASK_STATE_DONE
 	}
+	controller.update(task)
 	log.Infof("Finish running image: %s (Tags: %s). Next run time: %d", image.ID, image.RepoTags, task.NextRuntimeMillisecond)
-}
-
-func (controller Controller) getTask(id string) Task {
-
-	return controller.taskIdToTask[id]
 }
 
 func publishResults(testResultsFilePath string) error {
