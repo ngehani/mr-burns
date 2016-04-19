@@ -43,7 +43,7 @@ func TestStartController(t *testing.T) {
 	mockWaitContainer(client)
 	controller.Start()
 
-	assert.True(t, strings.Contains(givenResultsFilePath, IMAGE_ID),
-		"Given results file path does not contains image ID. Path:", givenResultsFilePath,
-		"Image ID:", IMAGE_ID)
+	assert.True(t, strings.Contains(givenResultsFilePath, MOCK_TEST_RESULTS_FILE_NAME),
+		"Given results file path does not contains mock test results file name. Path:", givenResultsFilePath,
+		"File name:", MOCK_TEST_RESULTS_FILE_NAME)
 }

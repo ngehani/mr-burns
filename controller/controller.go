@@ -4,12 +4,12 @@ import (
 	"time"
 	"log"
 	"github.com/fsouza/go-dockerclient"
-	"fmt"
 	"net/http"
 	"bytes"
 	"io/ioutil"
 	"strconv"
 	"syscall"
+	"strings"
 )
 
 type Controller struct {
@@ -79,8 +79,7 @@ func (controller Controller) startContainer(task *Task) {
 	task.State = TASK_STATE_RUNNING
 	go func() {
 		image := task.Data.(docker.APIImages)
-		containerName := fmt.Sprintf("%s@mr-burns", image.RepoTags[0])
-		testResultsFilePath, _ := controller.docker.RunTests(image, containerName)
+		testResultsFilePath, _ := controller.docker.RunTests(image, getContainerName(image))
 		controller.publish(testResultsFilePath)
 		controller.setTaskNextRunningTime(task)
 	}()
@@ -97,7 +96,7 @@ func (controller Controller) setTaskNextRunningTime(task *Task) {
 		task.NextRuntimeMillisecond = 0
 		task.State = TASK_STATE_DONE
 	}
-	log.Printf("Finish running image: %s %s. Next run time: %d", image.ID, image.RepoTags, task.NextRuntimeMillisecond)
+	log.Printf("Finish running image: %s (Tags: %s). Next run time: %d", image.ID, image.RepoTags, task.NextRuntimeMillisecond)
 }
 
 func publishResults(testResultsFilePath string) error {
@@ -144,4 +143,12 @@ func controllerSleep() {
 func controllerStop() bool {
 
 	return false
+}
+
+func getContainerName(image docker.APIImages) string {
+
+	ret := image.RepoTags[0]
+	ret = strings.Replace(ret, "/", "_", -1)
+
+	return strings.Replace(ret, ":", "_", -1)
 }

@@ -9,6 +9,8 @@ import (
 	"fmt"
 )
 
+const MOCK_TEST_RESULTS_FILE_NAME string = "mock-test-results.xml"
+
 func TestGetImages(t *testing.T) {
 
 	const IMAGE_ID string = "aa789bb"
@@ -41,9 +43,9 @@ func mockListImages(mockClient *dockerclient.MockClient, imageId string) docker.
 
 	labels := map[string]string{
 		dockerclient.LabelTestResultPath: "/tmp/test-results",
-		dockerclient.LabelTestResultsFile: "mock-test-results.xml",
+		dockerclient.LabelTestResultsFile: MOCK_TEST_RESULTS_FILE_NAME,
 		dockerclient.LabelInterval: "600000"}
-	ret := docker.APIImages{ID: imageId, Labels: labels}
+	ret := docker.APIImages{ID: imageId, Labels: labels, RepoTags: []string{"gaiaadm/mr-burns-builder:latest"}}
 	mockClient.On("ListImages", mock.Anything).Return([]docker.APIImages{ret}, nil)
 
 	return ret
