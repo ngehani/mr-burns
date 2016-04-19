@@ -18,7 +18,7 @@ RUN curl -Ls https://github.com/Masterminds/glide/releases/download/0.10.1/glide
 RUN go get github.com/mitchellh/gox \
     && go get github.com/jstemmer/go-junit-report
 
-ENV RESULT_DIR $MR_BURNS_DIR/.cover
+ENV RESULT_DIR $MR_BURNS_DIR.cover
 ENV RESULT_FILE go-results_tests.xml
 
 LABEL test=
