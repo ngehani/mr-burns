@@ -9,6 +9,7 @@ const (
 )
 
 type Task struct {
+	ID                     string
 	NextRuntimeMillisecond int64
 	State                  TaskState
 	Data                   interface{}

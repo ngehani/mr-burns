@@ -76,7 +76,7 @@ func (controller Controller) initialize() {
 
 func (controller Controller) startContainer(task *Task) {
 
-	task.State = TASK_STATE_RUNNING
+	controller.taskIdToTask[task.ID].State = TASK_STATE_RUNNING
 	go func() {
 		image := task.Data.(docker.APIImages)
 		testResultsFilePath, err := controller.docker.RunTests(image, getContainerName(image))
@@ -127,6 +127,7 @@ func publishResults(testResultsFilePath string) error {
 func newTask(image docker.APIImages) Task {
 
 	return Task{
+		ID: image.ID,
 		NextRuntimeMillisecond: -1,
 		State: TASK_STATE_WAITING,
 		Data: image,
