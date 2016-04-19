@@ -17,9 +17,9 @@ dependencies:
   override:
     - chmod u+x script/go_build.sh script/go_test.sh
     # create builder image
-    - docker build -t gaiaadm/mr-burns/builder -f Build.Dockerfile .
+    - docker build -t gaiaadm/mr-burns-builder -f Build.Dockerfile .
     # run go build in a docker container
-    - docker run --rm -v "$PWD":/go/src/github.com/gaia-adm/mr-burns gaiaadm/mr-burns/builder script/go_build.sh
+    - docker run --rm -v "$PWD":/go/src/github.com/gaia-adm/mr-burns gaiaadm/mr-burns-builder script/go_build.sh
     # create mr-burns docker image
     - docker build -t gaiaadm/mr-burns .
     - docker tag gaiaadm/mr-burns gaiaadm/mr-burns:$CIRCLE_BUILD_NUM-$CIRCLE_BRANCH
@@ -27,7 +27,7 @@ dependencies:
 test:
   override:
     # run mr-burns tests and generate junit.xml reports
-    - docker run --rm -v "$PWD":/go/src/github.com/gaia-adm/mr-burns gaiaadm/mr-burns/builder script/go_test.sh
+    - docker run --rm -v "$PWD":/go/src/github.com/gaia-adm/mr-burns gaiaadm/mr-burns-builder script/go_test.sh
   post:
     # copy test results
     - cp .cover/*_tests.xml $CIRCLE_TEST_REPORTS
@@ -36,7 +36,7 @@ deployment:
     branch: [master, develop, /feature_.*/]
     commands:
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-      - docker push gaiaadm/mr-burns/builder
+      - docker push gaiaadm/mr-burns-builder
       - docker push gaiaadm/mr-burns
       - ./update_service.sh -t $CIRCLE_BRANCH -b $CIRCLE_BUILD_NUM -f mr-burns.service -n mr-burns
 notify:
