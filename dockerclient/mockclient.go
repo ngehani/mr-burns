@@ -1,8 +1,8 @@
 package dockerclient
 
 import (
-	"github.com/stretchr/testify/mock"
 	"github.com/fsouza/go-dockerclient"
+	"github.com/stretchr/testify/mock"
 )
 
 type MockClient struct {
@@ -397,7 +397,7 @@ func (client *MockClient) ExportContainer(opts docker.ExportContainerOptions) er
 	return args.Error(0)
 }
 
-func (client *MockClient) AddEventListener(listener chan <- *docker.APIEvents) error {
+func (client *MockClient) AddEventListener(listener chan<- *docker.APIEvents) error {
 
 	args := client.Mock.Called(listener)
 

@@ -1,10 +1,10 @@
 package controller
 
 import (
-	"testing"
-	"github.com/gaia-adm/mr-burns/dockerclient"
 	"github.com/fsouza/go-dockerclient"
+	"github.com/gaia-adm/mr-burns/dockerclient"
 	"github.com/stretchr/testify/mock"
+	"testing"
 )
 
 func TestStart(t *testing.T) {
@@ -21,7 +21,7 @@ func TestStart(t *testing.T) {
 func addImages(mockClient *dockerclient.MockClient) []docker.APIImages {
 
 	labels := map[string]string{dockerclient.LabelTestResultPath: "/tmp/junit-results"}
-	images := []docker.APIImages{docker.APIImages{Labels:labels}}
+	images := []docker.APIImages{docker.APIImages{Labels: labels}}
 	mockClient.On("ListImages", mock.Anything).Return(images, nil)
 
 	return images
@@ -36,14 +36,14 @@ func addCreateContainer(mockClient *dockerclient.MockClient, images []docker.API
 
 	var options docker.CreateContainerOptions
 	mockClient.On("CreateContainer", mock.Anything).
-	Run(func(args mock.Arguments) {
-		options = args.Get(0).(docker.CreateContainerOptions)
-	}).
-	Return(&docker.Container{
-		Name: options.Name,
-		Config: options.Config,
-		HostConfig: options.HostConfig},
-		nil)
+		Run(func(args mock.Arguments) {
+			options = args.Get(0).(docker.CreateContainerOptions)
+		}).
+		Return(&docker.Container{
+			Name:       options.Name,
+			Config:     options.Config,
+			HostConfig: options.HostConfig},
+			nil)
 }
 
 func addStartContainer(mockClient *dockerclient.MockClient) {

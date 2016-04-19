@@ -2,16 +2,16 @@ package dockerclient
 
 import (
 	"fmt"
-	"strings"
 	"github.com/fsouza/go-dockerclient"
+	"strings"
 )
 
 const (
-	LabelTest = "test"
-	LabelInterval = "test.run.interval"
-	LabelTestResultPath = "test.results.dir"
+	LabelTest            = "test"
+	LabelInterval        = "test.run.interval"
+	LabelTestResultPath  = "test.results.dir"
 	TestResultsFileLabel = "test.results.file"
-	TestCmdLabel = "test.cmd"
+	TestCmdLabel         = "test.cmd"
 )
 
 // NewContainer returns a new Container instance instantiated with the

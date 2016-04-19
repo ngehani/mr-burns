@@ -5,7 +5,6 @@ import (
 	"github.com/fsouza/go-dockerclient"
 )
 
-
 // A Client is the interface through which mr-burns interacts with the Docker API.
 type DockerClient interface {
 	ListContainers(opts docker.ListContainersOptions) ([]Container, error)
