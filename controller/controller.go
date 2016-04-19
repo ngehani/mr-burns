@@ -93,6 +93,7 @@ func (controller Controller) setTaskNextRunningTime(task *Task) {
 
 	image := task.Data.(docker.APIImages)
 	imageInterval := controller.docker.GetImageRunningInterval(image)
+	log.Infof("image intrval %v", imageInterval)
 	if (len(imageInterval) > 0) {
 		interval, _ := strconv.ParseInt(imageInterval, 10, 64)
 		task.NextRuntimeMillisecond = getTimeNowMillisecond() + interval
