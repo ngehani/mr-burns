@@ -51,6 +51,7 @@ func (manager DockerManager) RunTests(image docker.APIImages, containerName stri
 		return "", errors.New(fmt.Sprintf("Failed waiting for container: %s. Status: %v", containerName, status))
 	}
 
+	log.Printf("resultDirName: %s, file: %s", resultDirName, image.Labels[dockerclient.LabelTestResultsFile])
 	return filepath.Join(resultDirName, image.Labels[dockerclient.LabelTestResultsFile]), nil
 }
 
