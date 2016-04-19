@@ -25,6 +25,7 @@ LABEL test.results.dir=$RESULT_DIR
 LABEL test.results.file=$RESULT_FILE
 LABEL test.cmd=script/go_test.sh
 
+RUN pwd
 RUN ls -la
 RUN chmod u+x script/go_build.sh script/go_test.sh
 
