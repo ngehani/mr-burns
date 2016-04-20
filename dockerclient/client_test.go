@@ -32,7 +32,8 @@ func TestListContainers_Filter(t *testing.T) {
 	ci := createDummyContainerInfo()
 	api := NewMockClient()
 	ii := &docker.Image{}
-	lco := docker.ListContainersOptions{All: false, Size: false, Filters: map[string][]string{"label": {"test="}}}
+	lco := docker.ListContainersOptions{All: false, Size: false,
+		Filters: map[string][]string{"label": {"test="}, "dangling": "false"}}
 	api.On("ListContainers", lco).Return([]docker.APIContainers{{ID: "foo", Names: []string{"bar"}, Labels: map[string]string{"label": "test="}}}, nil)
 	api.On("InspectContainer", "foo").Return(ci, nil)
 	api.On("InspectImage", "abc123").Return(ii, nil)

@@ -22,8 +22,7 @@ func NewDockerManager(dockerClient dockerclient.DockerClient) DockerManager {
 func (manager DockerManager) GetImages() ([]docker.APIImages, error) {
 
 	return manager.client.ListImages(
-		docker.ListImagesOptions{All: false,
-			Filters: map[string][]string{"label": {"test="}}});
+		docker.ListImagesOptions{All: false, Filters: map[string][]string{"label": {"test="}, "dangling": "false"}});
 }
 
 func (manager DockerManager) RunTests(image docker.APIImages, containerName string) (string, error) {

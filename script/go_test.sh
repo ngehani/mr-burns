@@ -8,7 +8,7 @@ generate_test_coverage_data() {
     mkdir "$workdir"
 	rm -rf "$workdir/*"
     glide install
-    go test $(go list ./... | grep -v /vendor/) > "../$workdir/go-results_tests.txt"
+    go test "$(go list ./... | grep -v /vendor/)" > "../$workdir/go-results_tests.txt"
     cat "../$workdir/go-results_tests.txt" | go-junit-report > "../$workdir/go-results_tests.xml"
 }
 
