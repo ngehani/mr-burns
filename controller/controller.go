@@ -10,7 +10,6 @@ import (
 	"strconv"
 	"syscall"
 	"strings"
-	xj "github.com/basgys/goxml2json"
 )
 
 type Controller struct {
@@ -117,12 +116,11 @@ func publishResults(containerName string, testResultsFilePath string) error {
 
 	testResults, err := ioutil.ReadFile(testResultsFilePath)
 	if err != nil {
-		log.Infof("Failed to read test results file. File: %s Error: %v", testResultsFilePath, err)
+		log.Error("Failed to read test results file. File: %s Error: %v", testResultsFilePath, err)
 		return err
 	}
-	stringResults, err := convertResults(testResults, testResultsFilePath)
-	log.Infof("Container: %s, test results: %s", containerName, stringResults)
-	req, err := http.NewRequest("POST", "http://distributor-link:8000", bytes.NewBufferString(stringResults))
+	log.Infof("Container: %s, test results: %s", containerName, string(testResults))
+	req, err := http.NewRequest("POST", "http://distributor-link:8000", bytes.NewBuffer(testResults))
 	client := &http.Client{}
 	response, err := client.Do(req)
 	if err != nil {
@@ -132,22 +130,6 @@ func publishResults(containerName string, testResultsFilePath string) error {
 	defer response.Body.Close()
 
 	return nil
-}
-
-func convertResults(testResults []byte, testResultsFilePath string) (string, error) {
-
-	if (strings.HasSuffix(testResultsFilePath, ".xml")) {
-		log.Debugln("Converting results to json...")
-		jsonTestResults, err := xj.Convert(bytes.NewReader(testResults))
-		if err != nil {
-			log.Error("Failed converting test results to JSON", err)
-			return jsonTestResults.String(), err
-		}
-
-		return jsonTestResults.String(), nil
-	}
-
-	return string(testResults), nil
 }
 
 func newTask(image docker.APIImages) Task {
