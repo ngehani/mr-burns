@@ -119,12 +119,12 @@ func publishResults(containerName string, testResultsFilePath string) error {
 		log.Infof("Failed to read test results file. File: %s Error: %v", testResultsFilePath, err)
 		return err
 	}
-	log.Debugf("Container: %s, test results: %s", containerName, string(testResults))
+	log.Infof("Container: %s, test results: %s", containerName, string(testResults))
 	req, err := http.NewRequest("POST", "http://distributor-link:8000", bytes.NewBuffer(testResults))
 	client := &http.Client{}
 	response, err := client.Do(req)
 	if err != nil {
-		log.Infof("Failed to POST container test results", err)
+		log.Error("Failed to POST container test results", err)
 		return err
 	}
 	defer response.Body.Close()
