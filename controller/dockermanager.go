@@ -27,8 +27,8 @@ func (manager DockerManager) GetImages() ([]docker.APIImages, error) {
 
 func (manager DockerManager) RunTests(image docker.APIImages, containerName string) (string, error) {
 
-	containerResultsPath := image.Labels[dockerclient.LabelTestResultPath]
-	containerCmd := image.Labels[dockerclient.LabelTestCmd]
+	containerResultsPath := image.Labels[dockerclient.LABEL_TEST_RESULTS_DIR]
+	containerCmd := image.Labels[dockerclient.LABEL_TEST_CMD]
 	resultDirName := fmt.Sprintf("/tmp/test-results/%s", containerName)
 	os.MkdirAll(resultDirName, 0700)
 	containerConfig := &docker.Config{Image: image.ID}
@@ -51,12 +51,17 @@ func (manager DockerManager) RunTests(image docker.APIImages, containerName stri
 		return "", errors.New(fmt.Sprintf("Failed waiting for container: %s. Status: %v", containerName, status))
 	}
 
-	return filepath.Join(resultDirName, image.Labels[dockerclient.LabelTestResultsFile]), nil
+	return filepath.Join(resultDirName, image.Labels[dockerclient.LABEL_TEST_RESULTS_FILE]), nil
 }
 
-func (manager DockerManager) GetImageRunningInterval(image docker.APIImages) string {
+func (manager DockerManager) GetLabelImageRunningInterval(image docker.APIImages) string {
 
-	return image.Labels[dockerclient.LabelInterval]
+	return image.Labels[dockerclient.LABEL_INTERVAL]
+}
+
+func (manager DockerManager) GetLabelImageDesc(image docker.APIImages) string {
+
+	return image.Labels[dockerclient.LABEL_DESC]
 }
 
 func (manager DockerManager) startContainer(image docker.APIImages, containerName string, containerConfig *docker.Config, hostConfig *docker.HostConfig) error {

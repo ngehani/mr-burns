@@ -70,7 +70,7 @@ func TestIsTest_True(t *testing.T) {
 	c := Container{
 		containerInfo: &docker.Container{
 			Config: &docker.Config{
-				Labels: map[string]string{LabelTest: "true"},
+				Labels: map[string]string{LABEL_TEST: "true"},
 			},
 		},
 	}
@@ -82,7 +82,7 @@ func TestIsTest_WrongLabelValue(t *testing.T) {
 	c := Container{
 		containerInfo: &docker.Container{
 			Config: &docker.Config{
-				Labels: map[string]string{LabelTest: "false"},
+				Labels: map[string]string{LABEL_TEST: "false"},
 			},
 		},
 	}
@@ -107,7 +107,7 @@ func TestRunInterval_Present(t *testing.T) {
 		containerInfo: &docker.Container{
 			Config: &docker.Config{
 				Labels: map[string]string{
-					LabelInterval: "300000",
+					LABEL_INTERVAL: "300000",
 				},
 			},
 		},

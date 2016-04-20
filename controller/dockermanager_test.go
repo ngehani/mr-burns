@@ -9,7 +9,10 @@ import (
 	"fmt"
 )
 
-const MOCK_TEST_RESULTS_FILE_NAME string = "mock-test-results.xml"
+const (
+	MOCK_TEST_RESULTS_FILE_NAME string = "mock-test-results.xml"
+	MOCK_TEST_DESC string = "Simpsons Integration Tests"
+)
 
 func TestGetImages(t *testing.T) {
 
@@ -42,9 +45,10 @@ func TestRunTests(t *testing.T) {
 func mockListImages(mockClient *dockerclient.MockClient, imageId string) docker.APIImages {
 
 	labels := map[string]string{
-		dockerclient.LabelTestResultPath: "/tmp/test-results",
-		dockerclient.LabelTestResultsFile: MOCK_TEST_RESULTS_FILE_NAME,
-		dockerclient.LabelInterval: "600000"}
+		dockerclient.LABEL_TEST_RESULTS_DIR: "/tmp/test-results",
+		dockerclient.LABEL_TEST_RESULTS_FILE: MOCK_TEST_RESULTS_FILE_NAME,
+		dockerclient.LABEL_INTERVAL: "600000",
+		dockerclient.LABEL_DESC: MOCK_TEST_DESC}
 	ret := docker.APIImages{ID: imageId, Labels: labels, RepoTags: []string{"gaiaadm/mr-burns-builder:latest"}}
 	mockClient.On("ListImages", mock.Anything).Return([]docker.APIImages{ret}, nil)
 

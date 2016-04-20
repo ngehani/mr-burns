@@ -10,13 +10,14 @@ import (
 	"strconv"
 	"syscall"
 	"strings"
+	"fmt"
 )
 
 type Controller struct {
 	taskIdToTask map[string]Task
 	docker       DockerManager
 	sleep        func()
-	publish      func(string, string) error
+	publish      func(string, string, string) error
 	stop         func() bool
 }
 
@@ -85,7 +86,7 @@ func (controller Controller) startContainer(task Task) {
 		if err != nil {
 			log.Infof("Error while trying to run tests from image: %s. Error: %v", image, err)
 		}else {
-			controller.publish(containerName, testResultsFilePath)
+			controller.publish(testResultsFilePath, containerName, controller.docker.GetLabelImageDesc(image))
 		}
 		controller.setTaskNextRunningTime(task)
 	}()
@@ -99,7 +100,7 @@ func (controller Controller) update(task Task) {
 func (controller Controller) setTaskNextRunningTime(task Task) {
 
 	image := task.Data.(docker.APIImages)
-	imageInterval := controller.docker.GetImageRunningInterval(image)
+	imageInterval := controller.docker.GetLabelImageRunningInterval(image)
 	if (len(imageInterval) > 0) {
 		interval, _ := strconv.ParseInt(imageInterval, 10, 64)
 		task.NextRuntimeMillisecond = getTimeNowMillisecond() + interval
@@ -112,15 +113,19 @@ func (controller Controller) setTaskNextRunningTime(task Task) {
 	log.Infof("Finish running image: %s (Tags: %s). Next run time: %d", image.ID, image.RepoTags, task.NextRuntimeMillisecond)
 }
 
-func publishResults(containerName string, testResultsFilePath string) error {
+func publishResults(testResultsFilePath string, containerName string, testDesc string) error {
 
 	testResults, err := ioutil.ReadFile(testResultsFilePath)
 	if err != nil {
 		log.Error("Failed to read test results file. File: %s Error: %v", testResultsFilePath, err)
 		return err
 	}
-	log.Infof("Container: %s, test results: %s", containerName, string(testResults))
-	req, err := http.NewRequest("POST", "http://distributor-link:8000", bytes.NewBuffer(testResults))
+	results := string(testResults)
+	if len(testDesc) > 0 {
+		results = fmt.Sprintf("%s\n%s", testDesc, results)
+	}
+	log.Infof("Container: %s, test results: %s", containerName, results)
+	req, err := http.NewRequest("POST", "http://distributor-link:8000", bytes.NewBufferString(results))
 	client := &http.Client{}
 	response, err := client.Do(req)
 	if err != nil {
