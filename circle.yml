@@ -45,3 +45,4 @@ notify:
 general:
   artifacts:
     - .dist
+    - .cover
