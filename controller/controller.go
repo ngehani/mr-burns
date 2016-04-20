@@ -11,7 +11,6 @@ import (
 	"syscall"
 	"strings"
 	xj "github.com/basgys/goxml2json"
-	"image"
 )
 
 type Controller struct {
@@ -139,16 +138,16 @@ func convertResults(testResults []byte, testResultsFilePath string) (string, err
 
 	if (strings.HasSuffix(testResultsFilePath, ".xml")) {
 		log.Debugln("Converting results to json...")
-		jsonTestResults, err := xj.Convert(testResults)
+		jsonTestResults, err := xj.Convert(bytes.NewReader(testResults))
 		if err != nil {
 			log.Error("Failed converting test results to JSON", err)
-			return nil, err
+			return jsonTestResults.String(), err
 		}
 
 		return jsonTestResults.String(), nil
 	}
 
-	return string(testResults)
+	return string(testResults), nil
 }
 
 func newTask(image docker.APIImages) Task {
