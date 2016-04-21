@@ -27,6 +27,18 @@ func TestGetImages(t *testing.T) {
 	assert.Equal(t, mockImage.ID, images[0].ID)
 }
 
+func TestGetImagesFilterDangling(t *testing.T) {
+
+	const IMAGE_ID string = "aa789bb"
+	client := dockerclient.NewMockClient()
+	manager := NewDockerManager(client.CreateMockClientWrapper())
+	mockListImagesRepoTags(client, IMAGE_ID, "<none>:<none>")
+	images, err := manager.GetImages()
+
+	assert.NoError(t, err)
+	assert.Len(t, images, 0)
+}
+
 func TestRunTests(t *testing.T) {
 
 	const IMAGE_ID string = "aa789bb"
@@ -44,12 +56,17 @@ func TestRunTests(t *testing.T) {
 
 func mockListImages(mockClient *dockerclient.MockClient, imageId string) docker.APIImages {
 
+	return mockListImagesRepoTags(mockClient, imageId, "gaiaadm/mr-burns-builder:latest")
+}
+
+func mockListImagesRepoTags(mockClient *dockerclient.MockClient, imageId string, repoTags string) docker.APIImages {
+
 	labels := map[string]string{
 		dockerclient.LABEL_TEST_RESULTS_DIR: "/tmp/test-results",
 		dockerclient.LABEL_TEST_RESULTS_FILE: MOCK_TEST_RESULTS_FILE_NAME,
 		dockerclient.LABEL_INTERVAL: "600000",
 		dockerclient.LABEL_DESC: MOCK_TEST_DESC}
-	ret := docker.APIImages{ID: imageId, Labels: labels, RepoTags: []string{"gaiaadm/mr-burns-builder:latest"}}
+	ret := docker.APIImages{ID: imageId, Labels: labels, RepoTags: []string{repoTags}}
 	mockClient.On("ListImages", mock.Anything).Return([]docker.APIImages{ret}, nil)
 
 	return ret

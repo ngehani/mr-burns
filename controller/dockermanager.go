@@ -8,6 +8,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"errors"
 	"path/filepath"
+	"strings"
 )
 
 type DockerManager struct {
@@ -21,8 +22,27 @@ func NewDockerManager(dockerClient dockerclient.DockerClient) DockerManager {
 
 func (manager DockerManager) GetImages() ([]docker.APIImages, error) {
 
-	return manager.client.ListImages(
-		docker.ListImagesOptions{All: false, Filters: map[string][]string{"label": {"test="}, "dangling": {"false"}}});
+	images, err := manager.client.ListImages(
+		docker.ListImagesOptions{All: false, Filters: map[string][]string{"label": {"test="}, "dangling": {"false"}}})
+	if err != nil {
+		return nil, err
+	}
+	log.Print(dangling(images))
+
+	// filter dangling (doesn't supported as part of docker API like on docker swarm)
+	return dangling(images), nil
+}
+
+func dangling(images []docker.APIImages) []docker.APIImages {
+
+	var ret []docker.APIImages
+	for _, currImage := range images {
+		if !strings.Contains(currImage.RepoTags[0], "<none>") {
+			ret = append(ret, currImage)
+		}
+	}
+
+	return ret
 }
 
 func (manager DockerManager) RunTests(image docker.APIImages, containerName string) (string, error) {
