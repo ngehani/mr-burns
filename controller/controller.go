@@ -71,13 +71,6 @@ func (controller Controller) initialize() {
 		log.Infof("Failed to get docker images. Error: %v", err)
 	}
 
-	// PRINT ///////////////////////////
-	for _, currImage := range images {
-		log.Info("currImage.RepoTags: ", currImage.RepoTags)
-		log.Info("currImage.RepoDigests: ", currImage.RepoDigests)
-	}
-	////////////////////////////////////
-
 	for _, currImage := range images {
 		controller.taskIdToTask[currImage.ID] = newTask(currImage)
 	}
