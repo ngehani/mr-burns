@@ -7,9 +7,8 @@ generate_test_coverage_data() {
     # create dir if not exist and remove old content
     mkdir "$workdir"
 	rm -rf "$workdir/*"
-    #glide install
+    glide install
     cd controller
-    go get
     go test -cover -v > "../$workdir/go-results_tests.txt"
     cat "../$workdir/go-results_tests.txt" | go-junit-report > "../$workdir/go-results_tests.xml"
 }
