@@ -18,18 +18,6 @@ type DockerClientWrapper struct {
 	client Client
 }
 
-// NewClient returns a new Client instance which can be used to interact with
-// the Docker API.
-func NewClientWithTLS(dockerHost string, cert, key, ca string) DockerClient {
-
-	docker, err := docker.NewTLSClient(dockerHost, cert, key, ca)
-	if err != nil {
-		log.Fatalf("Error instantiating Docker client: %s", err)
-	}
-
-	return DockerClientWrapper{client: docker}
-}
-
 func NewClient(dockerHost string) DockerClient {
 
 	docker, err := docker.NewClient(dockerHost)
