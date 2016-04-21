@@ -70,6 +70,14 @@ func (controller Controller) initialize() {
 	if err != nil {
 		log.Infof("Failed to get docker images. Error: %v", err)
 	}
+
+	// PRINT ///////////////////////////
+	for _, currImage := range images {
+		log.Info("currImage.RepoTags: ", currImage.RepoTags)
+		log.Info("currImage.RepoDigests: ", currImage.RepoDigests)
+	}
+	////////////////////////////////////
+
 	for _, currImage := range images {
 		controller.taskIdToTask[currImage.ID] = newTask(currImage)
 	}
@@ -168,7 +176,7 @@ func controllerStop() bool {
 func getContainerName(image docker.APIImages) string {
 
 	ret := image.RepoTags[0]
-	ret = strings.Replace(ret, "/", "_", -1)
+	ret = strings.Replace(ret, "/", ".", -1)
 
-	return strings.Replace(ret, ":", "_", -1)
+	return strings.Replace(ret, ":", ".", -1)
 }
