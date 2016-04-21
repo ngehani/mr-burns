@@ -3,6 +3,7 @@ package dockerclient
 import (
 	"github.com/fsouza/go-dockerclient"
 	"github.com/stretchr/testify/mock"
+	"errors"
 )
 
 type MockClient struct {
@@ -378,9 +379,7 @@ func (client *MockClient) AttachToContainerNonBlocking(opts docker.AttachToConta
 
 func (client *MockClient) Logs(opts docker.LogsOptions) error {
 
-	args := client.Mock.Called(opts)
-
-	return args.Error(0)
+	return errors.New("DockerClientWrapper imlementation of Logs currently doesn't allow to return a value")
 }
 
 func (client *MockClient) ResizeContainerTTY(id string, height, width int) error {
@@ -397,7 +396,7 @@ func (client *MockClient) ExportContainer(opts docker.ExportContainerOptions) er
 	return args.Error(0)
 }
 
-func (client *MockClient) AddEventListener(listener chan<- *docker.APIEvents) error {
+func (client *MockClient) AddEventListener(listener chan <- *docker.APIEvents) error {
 
 	args := client.Mock.Called(listener)
 

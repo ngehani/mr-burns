@@ -100,3 +100,11 @@ func mockWaitContainer(mockClient *dockerclient.MockClient) {
 
 	mockClient.On("WaitContainer", mock.Anything).Return(0, nil)
 }
+
+func mockLogs(mockClient *dockerclient.MockClient) string {
+
+	logs := "mkdir: can't create directory '.cover': File exists\n[INFO] Downloading dependencies. Please wait...\n[INFO] Fetching updates for github.com/davecgh/go-spew."
+	mockClient.On("Logs", mock.Anything).Return(nil)
+
+	return logs
+}

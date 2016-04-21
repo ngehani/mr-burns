@@ -74,16 +74,6 @@ func (manager DockerManager) RunTests(image docker.APIImages, containerName stri
 	return filepath.Join(resultDirName, image.Labels[dockerclient.LABEL_TEST_RESULTS_FILE]), nil
 }
 
-func (manager DockerManager) GetLabelImageRunningInterval(image docker.APIImages) string {
-
-	return image.Labels[dockerclient.LABEL_INTERVAL]
-}
-
-func (manager DockerManager) GetLabelImageDesc(image docker.APIImages) string {
-
-	return image.Labels[dockerclient.LABEL_DESC]
-}
-
 func (manager DockerManager) startContainer(image docker.APIImages, containerName string, containerConfig *docker.Config, hostConfig *docker.HostConfig) error {
 
 	manager.client.RemoveContainer(containerName, true)
@@ -94,4 +84,19 @@ func (manager DockerManager) startContainer(image docker.APIImages, containerNam
 	}, &docker.Image{ID: image.ID})
 
 	return manager.client.StartContainer(*c)
+}
+
+func (manager DockerManager) GetLabelImageRunningInterval(image docker.APIImages) string {
+
+	return image.Labels[dockerclient.LABEL_INTERVAL]
+}
+
+func (manager DockerManager) GetLabelImageDesc(image docker.APIImages) string {
+
+	return image.Labels[dockerclient.LABEL_DESC]
+}
+
+func (manager DockerManager) GetContainerLogs(container string) (string, error) {
+
+	return manager.client.Logs(container)
 }

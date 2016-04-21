@@ -3,6 +3,9 @@ package dockerclient
 import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/fsouza/go-dockerclient"
+	"io"
+	"bytes"
+	"bufio"
 )
 
 // A Client is the interface through which mr-burns interacts with the Docker API.
@@ -11,7 +14,8 @@ type DockerClient interface {
 	ListImages(opts docker.ListImagesOptions) ([]docker.APIImages, error)
 	StartContainer(Container) error
 	RemoveContainer(string, bool) error
-	WaitContainer(container string) (int, error)
+	WaitContainer(string) (int, error)
+	Logs(container string) (string, error)
 }
 
 type DockerClientWrapper struct {
@@ -87,4 +91,35 @@ func (wrapper DockerClientWrapper) ListImages(opts docker.ListImagesOptions) ([]
 	}
 
 	return ret, nil
+}
+
+func (wrapper DockerClientWrapper) Logs(container string) (string, error) {
+
+	reader, writer := io.Pipe()
+	err := wrapper.client.Logs(docker.LogsOptions{
+		Container: container,
+		OutputStream: writer,
+		ErrorStream:  writer,
+	})
+	if err != nil {
+		return "", err
+	}
+
+	logs := make(chan string)
+	errScanner := make(chan error)
+	// read stdout and stderr logs
+	go func(reader io.Reader) {
+
+		var buffer bytes.Buffer
+		scanner := bufio.NewScanner(reader)
+		for scanner.Scan() {
+			buffer.WriteString(scanner.Text())
+		}
+		logs <- buffer.String()
+		errScanner <- scanner.Err()
+	}(reader)
+	ret := <-logs
+	errScannerReceiver := <-errScanner
+
+	return ret, errScannerReceiver
 }

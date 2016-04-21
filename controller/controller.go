@@ -17,7 +17,8 @@ type Controller struct {
 	taskIdToTask map[string]Task
 	docker       DockerManager
 	sleep        func()
-	publish      func(string, string, string) error
+	getResults   func(string) string
+	publish      func(string) error
 	stop         func() bool
 }
 
@@ -26,9 +27,14 @@ func NewController(dockerManager DockerManager) Controller {
 	return Controller{
 		taskIdToTask: map[string]Task{},
 		docker: dockerManager,
-		sleep: controllerSleep,
+		sleep: func() {
+			time.Sleep(time.Second * 10)
+		},
+		getResults: getTestResults,
 		publish: publishResults,
-		stop: controllerStop,
+		stop: func() bool {
+			return false
+		},
 	}
 }
 
@@ -87,7 +93,7 @@ func (controller Controller) startContainer(task Task) {
 		if err != nil {
 			log.Infof("Error while trying to run tests from image: %s. Error: %v", image, err)
 		}else {
-			controller.publish(testResultsFilePath, containerName, controller.docker.GetLabelImageDesc(image))
+			controller.publish(controller.getPublishData(controller.getResults(testResultsFilePath), image, containerName))
 		}
 		controller.setTaskNextRunningTime(task)
 	}()
@@ -114,23 +120,42 @@ func (controller Controller) setTaskNextRunningTime(task Task) {
 	log.Infof("Finish running image: %s (Tags: %s). Next run time: %d", image.ID, image.RepoTags, task.NextRuntimeMillisecond)
 }
 
-func publishResults(testResultsFilePath string, containerName string, testDesc string) error {
+func (controller Controller) getPublishData(testResults string, image docker.APIImages, container string) string {
+
+	if len(testResults) == 0 {
+		results, err := controller.docker.GetContainerLogs(container)
+		if err != nil {
+			log.Error("Failed to get container logs.", err, container, image)
+		}
+		testResults = results
+	}
+	testDesc := controller.docker.GetLabelImageDesc(image)
+	if len(testDesc) > 0 {
+		testResults = fmt.Sprintf("%s\n%s\n%s", testDesc, image.RepoTags[0], testResults)
+	}
+	log.Infof("Container: %s, test results: %s", container, testResults)
+
+	return testResults
+}
+
+func getTestResults(testResultsFilePath string) string {
 
 	testResults, err := ioutil.ReadFile(testResultsFilePath)
 	if err != nil {
-		log.Error("Failed to read test results file. File: %s Error: %v", testResultsFilePath, err)
-		return err
+		log.Error("Failed to read test results file.", err, testResultsFilePath)
+		testResults = []byte("")
 	}
-	results := string(testResults)
-	if len(testDesc) > 0 {
-		results = fmt.Sprintf("%s\n%s", testDesc, results)
-	}
-	log.Infof("Container: %s, test results: %s", containerName, results)
-	req, err := http.NewRequest("POST", "http://distributor-link:8000", bytes.NewBufferString(results))
+
+	return string(testResults)
+}
+
+func publishResults(data string) error {
+
+	req, err := http.NewRequest("POST", "http://distributor-link:8000", bytes.NewBufferString(data))
 	client := &http.Client{}
 	response, err := client.Do(req)
 	if err != nil {
-		log.Error("Failed to POST container test results", err)
+		log.Error("Failed to POST container test results", data, err)
 		return err
 	}
 	defer response.Body.Close()
@@ -154,16 +179,6 @@ func getTimeNowMillisecond() int64 {
 	syscall.Gettimeofday(&tv)
 
 	return (int64(tv.Sec) * 1e3 + int64(tv.Usec) / 1e3)
-}
-
-func controllerSleep() {
-
-	time.Sleep(time.Second * 10)
-}
-
-func controllerStop() bool {
-
-	return false
 }
 
 func getContainerName(image docker.APIImages) string {

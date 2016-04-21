@@ -1,11 +1,11 @@
 package dockerclient
 
 import (
+	"testing"
 	"errors"
-	"github.com/fsouza/go-dockerclient"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
+	"github.com/fsouza/go-dockerclient"
 )
 
 func TestListContainers_Success(t *testing.T) {
@@ -13,8 +13,8 @@ func TestListContainers_Success(t *testing.T) {
 	ci := createDummyContainerInfo()
 	api := NewMockClient()
 	ii := &docker.Image{}
-	lco := docker.ListContainersOptions{All: false, Size: false}
-	api.On("ListContainers", lco).Return([]docker.APIContainers{{ID: "foo", Names: []string{"bar"}}}, nil)
+	lco := docker.ListContainersOptions{All:false, Size:false}
+	api.On("ListContainers", lco).Return([]docker.APIContainers{{ID: "foo", Names:[]string{"bar"}}}, nil)
 	api.On("InspectContainer", "foo").Return(ci, nil)
 	api.On("InspectImage", "abc123").Return(ii, nil)
 
@@ -32,9 +32,8 @@ func TestListContainers_Filter(t *testing.T) {
 	ci := createDummyContainerInfo()
 	api := NewMockClient()
 	ii := &docker.Image{}
-	lco := docker.ListContainersOptions{All: false, Size: false,
-		Filters: map[string][]string{"label": {"test="}, "dangling": "false"}}
-	api.On("ListContainers", lco).Return([]docker.APIContainers{{ID: "foo", Names: []string{"bar"}, Labels: map[string]string{"label": "test="}}}, nil)
+	lco := docker.ListContainersOptions{All:false, Size:false, Filters: map[string][]string{"label": {"test="}}}
+	api.On("ListContainers", lco).Return([]docker.APIContainers{{ID: "foo", Names:[]string{"bar"}, Labels: map[string]string{"label": "test="}}}, nil)
 	api.On("InspectContainer", "foo").Return(ci, nil)
 	api.On("InspectImage", "abc123").Return(ii, nil)
 
@@ -50,7 +49,7 @@ func TestListContainers_Filter(t *testing.T) {
 func TestListContainers_ListError(t *testing.T) {
 
 	api := NewMockClient()
-	lco := docker.ListContainersOptions{All: false, Size: false}
+	lco := docker.ListContainersOptions{All:false, Size:false}
 	api.On("ListContainers", lco).Return([]docker.APIContainers{}, errors.New("oops"))
 
 	client := api.CreateMockClientWrapper()
@@ -64,8 +63,8 @@ func TestListContainers_ListError(t *testing.T) {
 func TestListContainers_InspectContainerError(t *testing.T) {
 
 	api := NewMockClient()
-	lco := docker.ListContainersOptions{All: false, Size: false}
-	api.On("ListContainers", lco).Return([]docker.APIContainers{{ID: "foo", Names: []string{"bar"}}}, nil)
+	lco := docker.ListContainersOptions{All:false, Size:false}
+	api.On("ListContainers", lco).Return([]docker.APIContainers{{ID: "foo", Names:[]string{"bar"}}}, nil)
 	api.On("InspectContainer", "foo").Return(&docker.Container{}, errors.New("uh-oh"))
 
 	client := api.CreateMockClientWrapper()
@@ -80,9 +79,9 @@ func TestListContainers_InspectImageError(t *testing.T) {
 
 	ci := &docker.Container{Image: "abc123", Config: &docker.Config{Image: "img"}}
 	ii := &docker.Image{}
-	lco := docker.ListContainersOptions{All: false, Size: false}
+	lco := docker.ListContainersOptions{All:false, Size:false}
 	api := NewMockClient()
-	api.On("ListContainers", lco).Return([]docker.APIContainers{{ID: "foo", Names: []string{"bar"}}}, nil)
+	api.On("ListContainers", lco).Return([]docker.APIContainers{{ID: "foo", Names:[]string{"bar"}}}, nil)
 	api.On("InspectContainer", "foo").Return(ci, nil)
 	api.On("InspectImage", "abc123").Return(ii, errors.New("whoops"))
 
@@ -103,7 +102,7 @@ func TestStartContainer_Success(t *testing.T) {
 
 	c := Container{
 		containerInfo: &docker.Container{
-			ID:         "def789",
+			ID: "def789",
 			Name:       "foo",
 			Config:     &docker.Config{},
 			HostConfig: &docker.HostConfig{},
@@ -128,7 +127,7 @@ func TestStartContainer_CreateContainerError(t *testing.T) {
 
 	c := Container{
 		containerInfo: &docker.Container{
-			ID:         "def789",
+			ID: "def789",
 			Name:       "foo",
 			Config:     &docker.Config{},
 			HostConfig: &docker.HostConfig{},
@@ -149,7 +148,7 @@ func TestStartContainer_StartContainerError(t *testing.T) {
 
 	c := Container{
 		containerInfo: &docker.Container{
-			ID:         "def789",
+			ID: "def789",
 			Name:       "foo",
 			Config:     &docker.Config{},
 			HostConfig: &docker.HostConfig{},
