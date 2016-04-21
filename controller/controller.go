@@ -88,12 +88,12 @@ func (controller Controller) startContainer(task Task) {
 	controller.update(task)
 	go func() {
 		image := task.Data.(docker.APIImages)
-		containerName := getContainerName(image)
-		testResultsFilePath, err := controller.docker.RunTests(image, containerName)
+		container := getContainerName(image)
+		testResultsFilePath, err := controller.docker.RunTests(image, container)
 		if err != nil {
 			log.Infof("Error while trying to run tests from image: %s. Error: %v", image, err)
 		}else {
-			controller.publish(controller.getPublishData(controller.getResults(testResultsFilePath), image, containerName))
+			controller.publish(controller.getPublishData(testResultsFilePath, image, container))
 		}
 		controller.setTaskNextRunningTime(task)
 	}()
@@ -120,14 +120,11 @@ func (controller Controller) setTaskNextRunningTime(task Task) {
 	log.Infof("Finish running image: %s (Tags: %s). Next run time: %d", image.ID, image.RepoTags, task.NextRuntimeMillisecond)
 }
 
-func (controller Controller) getPublishData(testResults string, image docker.APIImages, container string) string {
+func (controller Controller) getPublishData(testResultsFilePath string, image docker.APIImages, container string) string {
 
+	testResults := controller.getResults(testResultsFilePath)
 	if len(testResults) == 0 {
-		results, err := controller.docker.GetContainerLogs(container)
-		if err != nil {
-			log.Error("Failed to get container logs.", err, container, image)
-		}
-		testResults = results
+		testResults, _ = controller.docker.GetContainerLogs(container)
 	}
 	testDesc := controller.docker.GetLabelImageDesc(image)
 	if len(testDesc) > 0 {

@@ -63,7 +63,7 @@ func (manager DockerManager) RunTests(image docker.APIImages, containerName stri
 	}
 	status, err := manager.client.WaitContainer(containerName)
 	if err != nil {
-		log.Infof("Failed waiting for container: %s. Error: %v", containerName, err)
+		log.Error("Failed waiting for container: %s. Error: %v", containerName, err)
 		return "", err
 	}
 	log.Infof("Finish wating for container: %s, status: %d", containerName, status)
@@ -98,5 +98,10 @@ func (manager DockerManager) GetLabelImageDesc(image docker.APIImages) string {
 
 func (manager DockerManager) GetContainerLogs(container string) (string, error) {
 
-	return manager.client.Logs(container)
+	logs, err := manager.client.Logs(container)
+	if err != nil {
+		log.Error("Failed to get container logs.", container, err)
+	}
+
+	return logs, err
 }
