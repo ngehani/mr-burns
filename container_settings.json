@@ -4,6 +4,8 @@
   "OpenStdin": true,
   "HostConfig": {
     "Binds": [
+      "$PWD:/go/src/github.com/gaia-adm/mr-burns",
+      "/var/run/docker.sock:/var/run/docker.sock",
       "/tmp:/tmp"
     ],
     "Links": [
