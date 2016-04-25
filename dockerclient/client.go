@@ -100,6 +100,9 @@ func (wrapper DockerClientWrapper) Logs(container string) (string, error) {
 		Container: container,
 		OutputStream: writer,
 		ErrorStream:  writer,
+		Stdout: true,
+		Stderr: true,
+		Timestamps:   true,
 	})
 	if err != nil {
 		return "", err

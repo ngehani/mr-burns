@@ -101,7 +101,7 @@ func (manager DockerManager) GetContainerLogs(container string) (string, error) 
 
 	logs, err := manager.client.Logs(container)
 	if err != nil {
-		log.Error("Failed to get container logs.", container, err)
+		log.Error("Failed to get container logs. ", container, err)
 	}
 
 	return logs, err
