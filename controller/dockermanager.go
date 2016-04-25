@@ -9,6 +9,7 @@ import (
 	"errors"
 	"path/filepath"
 	"strings"
+	"github.com/gaia-adm/mr-burns/common"
 )
 
 type DockerManager struct {
@@ -49,14 +50,14 @@ func (manager DockerManager) RunTests(image docker.APIImages, containerName stri
 
 	containerResultsPath := image.Labels[dockerclient.LABEL_TEST_RESULTS_DIR]
 	containerCmd := image.Labels[dockerclient.LABEL_TEST_CMD]
-	resultDirName := fmt.Sprintf("/tmp/test-results/%s", containerName)
-	os.MkdirAll(resultDirName, 0700)
+	resultsDirName := fmt.Sprintf("/tmp/test-results/%s_%d", containerName, common.GetTimeNowMillisecond())
+	os.MkdirAll(resultsDirName, 0700)
 	containerConfig := &docker.Config{Image: image.ID}
 	if len(containerCmd) > 0 {
 		containerConfig.Cmd = []string{containerCmd }
 	}
 	err := manager.startContainer(image, containerName, containerConfig,
-		&docker.HostConfig{Binds: []string{fmt.Sprintf("%s:%s", resultDirName, containerResultsPath)}})
+		&docker.HostConfig{Binds: []string{fmt.Sprintf("%s:%s", resultsDirName, containerResultsPath)}})
 	if err != nil {
 		log.Infof("Failed starting container: %s. Error: %v", containerName, err)
 		return "", err
@@ -71,7 +72,7 @@ func (manager DockerManager) RunTests(image docker.APIImages, containerName stri
 		return "", errors.New(fmt.Sprintf("Failed waiting for container: %s. Status: %v", containerName, status))
 	}
 
-	return filepath.Join(resultDirName, image.Labels[dockerclient.LABEL_TEST_RESULTS_FILE]), nil
+	return filepath.Join(resultsDirName, image.Labels[dockerclient.LABEL_TEST_RESULTS_FILE]), nil
 }
 
 func (manager DockerManager) startContainer(image docker.APIImages, containerName string, containerConfig *docker.Config, hostConfig *docker.HostConfig) error {

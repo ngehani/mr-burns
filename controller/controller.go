@@ -8,9 +8,9 @@ import (
 	"bytes"
 	"io/ioutil"
 	"strconv"
-	"syscall"
 	"strings"
 	"fmt"
+	"github.com/gaia-adm/mr-burns/common"
 )
 
 type Controller struct {
@@ -64,7 +64,7 @@ func (controller Controller) startWaitingTasks() {
 
 	for _, currTask := range controller.taskIdToTask {
 		if TASK_STATE_WAITING == currTask.State &&
-		currTask.NextRuntimeMillisecond < getTimeNowMillisecond() {
+		currTask.NextRuntimeMillisecond < common.GetTimeNowMillisecond() {
 			controller.startContainer(currTask)
 		}
 	}
@@ -110,7 +110,7 @@ func (controller Controller) setTaskNextRunningTime(task Task) {
 	imageInterval := controller.docker.GetLabelImageRunningInterval(image)
 	if (len(imageInterval) > 0) {
 		interval, _ := strconv.ParseInt(imageInterval, 10, 64)
-		task.NextRuntimeMillisecond = getTimeNowMillisecond() + interval
+		task.NextRuntimeMillisecond = common.GetTimeNowMillisecond() + interval
 		task.State = TASK_STATE_WAITING
 	} else {
 		task.NextRuntimeMillisecond = 0
@@ -168,14 +168,6 @@ func newTask(image docker.APIImages) Task {
 		State: TASK_STATE_WAITING,
 		Data: image,
 	}
-}
-
-func getTimeNowMillisecond() int64 {
-
-	var tv syscall.Timeval
-	syscall.Gettimeofday(&tv)
-
-	return (int64(tv.Sec) * 1e3 + int64(tv.Usec) / 1e3)
 }
 
 func getContainerName(image docker.APIImages) string {
