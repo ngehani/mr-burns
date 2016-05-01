@@ -4,8 +4,6 @@ import (
 	"time"
 	log "github.com/Sirupsen/logrus"
 	"github.com/fsouza/go-dockerclient"
-	"net/http"
-	"bytes"
 	"io/ioutil"
 	"strconv"
 	"strings"
@@ -22,7 +20,7 @@ type Controller struct {
 	stop         func() bool
 }
 
-func NewController(dockerManager DockerManager) Controller {
+func NewController(dockerManager DockerManager, publisher Publisher) Controller {
 
 	return Controller{
 		taskIdToTask: map[string]Task{},
@@ -31,7 +29,7 @@ func NewController(dockerManager DockerManager) Controller {
 			time.Sleep(time.Second * 10)
 		},
 		getResults: getTestResults,
-		publish: publishResults,
+		publish: publisher.Publish,
 		stop: func() bool {
 			return false
 		},
@@ -92,7 +90,7 @@ func (controller Controller) startContainer(task Task) {
 		testResultsFilePath, err := controller.docker.RunTests(image, container)
 		if err != nil {
 			log.Infof("Error while trying to run tests from image: %s. Error: %v", image, err)
-		}else {
+		} else {
 			controller.publish(controller.getPublishData(testResultsFilePath, image, container))
 		}
 		controller.setTaskNextRunningTime(task)
@@ -144,20 +142,6 @@ func getTestResults(testResultsFilePath string) string {
 	}
 
 	return string(testResults)
-}
-
-func publishResults(data string) error {
-
-	req, err := http.NewRequest("POST", "http://distributor-link:8000", bytes.NewBufferString(data))
-	client := &http.Client{}
-	response, err := client.Do(req)
-	if err != nil {
-		log.Error("Failed to POST container test results", data, err)
-		return err
-	}
-	defer response.Body.Close()
-
-	return nil
 }
 
 func newTask(image docker.APIImages) Task {

@@ -34,18 +34,6 @@ func (manager DockerManager) GetImages() ([]docker.APIImages, error) {
 	return dangling(images), nil
 }
 
-func dangling(images []docker.APIImages) []docker.APIImages {
-
-	var ret []docker.APIImages
-	for _, currImage := range images {
-		if !strings.Contains(currImage.RepoTags[0], "<none>") {
-			ret = append(ret, currImage)
-		}
-	}
-
-	return ret
-}
-
 func (manager DockerManager) RunTests(image docker.APIImages, containerName string) (string, error) {
 
 	containerResultsPath := image.Labels[dockerclient.LABEL_TEST_RESULTS_DIR]
@@ -105,4 +93,16 @@ func (manager DockerManager) GetContainerLogs(container string) (string, error) 
 	}
 
 	return logs, err
+}
+
+func dangling(images []docker.APIImages) []docker.APIImages {
+
+	var ret []docker.APIImages
+	for _, currImage := range images {
+		if !strings.Contains(currImage.RepoTags[0], "<none>") {
+			ret = append(ret, currImage)
+		}
+	}
+
+	return ret
 }
