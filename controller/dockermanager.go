@@ -28,7 +28,7 @@ func (manager DockerManager) GetImages() ([]docker.APIImages, error) {
 	if err != nil {
 		return nil, err
 	}
-	log.Print(dangling(images))
+	log.Infof("Fetched images: %+v", dangling(images))
 
 	// filter dangling (doesn't supported as part of docker API like on docker swarm)
 	return dangling(images), nil

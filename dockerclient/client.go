@@ -84,7 +84,7 @@ func (wrapper DockerClientWrapper) WaitContainer(container string) (int, error) 
 
 func (wrapper DockerClientWrapper) ListImages(opts docker.ListImagesOptions) ([]docker.APIImages, error) {
 
-	log.Infof("Retrieving images according to opts: %+v", opts)
+	log.Infof("Retrieving docker images according to opts: %+v", opts)
 	ret, err := wrapper.client.ListImages(opts)
 	if err != nil {
 		return nil, err

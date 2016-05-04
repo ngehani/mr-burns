@@ -11,7 +11,7 @@ type Configuration struct {
 
 func NewConfiguration() Configuration {
 
-	return Configuration{PublisherURL: "http://distributor.skydns.local"}
+	return Configuration{PublisherURL: "http://distributor.skydns.local:8000"}
 
 	//file, err := os.Open("../mr-burns-configuration.json")
 	//if err != nil {
