@@ -7,8 +7,8 @@ import (
 	"io/ioutil"
 	"strconv"
 	"strings"
-	"fmt"
 	"github.com/gaia-adm/mr-burns/common"
+	"fmt"
 )
 
 type Controller struct {
@@ -89,11 +89,13 @@ func (controller Controller) startContainer(task Task) {
 		container := getContainerName(image)
 		testResultsFilePath, err := controller.docker.RunTests(image, container)
 		if err != nil {
-			log.Infof("Error while trying to run tests from image: %s. Error: %v", image, err)
+			log.Infof("Error while trying to run tests from image: %v. Error: %v", image, err)
 		} else {
 			controller.publish(controller.getPublishData(testResultsFilePath, image, container))
 		}
 		controller.setTaskNextRunningTime(task)
+		time, _ := msToTime(task.NextRuntimeMillisecond)
+		log.Infof("Finish running container:%s\nNext run time: %v", container, time)
 	}()
 }
 
@@ -111,26 +113,41 @@ func (controller Controller) setTaskNextRunningTime(task Task) {
 		task.NextRuntimeMillisecond = common.GetTimeNowMillisecond() + interval
 		task.State = TASK_STATE_WAITING
 	} else {
-		task.NextRuntimeMillisecond = 0
+		task.NextRuntimeMillisecond = -1
 		task.State = TASK_STATE_DONE
 	}
 	controller.update(task)
-	log.Infof("Finish running image: %s (Tags: %s). Next run time: %d", image.ID, image.RepoTags, task.NextRuntimeMillisecond)
+}
+
+func msToTime(ms string) (time.Time, error) {
+
+	msInt, err := strconv.ParseInt(ms, 10, 64)
+	if err != nil {
+		return time.Time{}, err
+	}
+
+	return time.Unix(0, msInt*int64(time.Millisecond)), nil
 }
 
 func (controller Controller) getPublishData(testResultsFilePath string, image docker.APIImages, container string) string {
 
+	var ret string
 	testResults := controller.getResults(testResultsFilePath)
-	if len(testResults) == 0 {
-		testResults, _ = controller.docker.GetContainerLogs(container)
+	if len(testResults) > 0 {
+		ret = fmt.Sprintf("Container: %s\n%+v\n%s", container, image.RepoTags, testResults)
+		log.Infof(ret)
+	} else {
+		containerLogs, err := controller.docker.GetContainerLogs(container)
+		if err != nil {
+			ret = fmt.Sprintf("Empty container test results. Trying to fetch container's logs but failed, Error: %v (Container: %s %+v)", err, container, image.RepoTags)
+			log.Errorf(ret)
+		} else {
+			ret = fmt.Sprintf("Container: %s\n%+v\nEmpty Test Results, Logs:\n%s", container, image.RepoTags, containerLogs)
+			log.Infof(ret)
+		}
 	}
-	testDesc := controller.docker.GetLabelImageDesc(image)
-	if len(testDesc) > 0 {
-		testResults = fmt.Sprintf("%s\n%s\n%s", testDesc, image.RepoTags[0], testResults)
-	}
-	log.Infof("Container: %s, test results: %s", container, testResults)
 
-	return testResults
+	return ret
 }
 
 func getTestResults(testResultsFilePath string) string {

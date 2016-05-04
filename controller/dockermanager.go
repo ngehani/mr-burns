@@ -80,11 +80,6 @@ func (manager DockerManager) GetLabelImageRunningInterval(image docker.APIImages
 	return image.Labels[dockerclient.LABEL_INTERVAL]
 }
 
-func (manager DockerManager) GetLabelImageDesc(image docker.APIImages) string {
-
-	return image.Labels[dockerclient.LABEL_DESC]
-}
-
 func (manager DockerManager) GetContainerLogs(container string) (string, error) {
 
 	logs, err := manager.client.Logs(container)

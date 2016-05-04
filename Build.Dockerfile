@@ -25,7 +25,6 @@ LABEL test=
 LABEL test.results.dir=$RESULT_DIR
 LABEL test.results.file=$RESULT_FILE
 LABEL test.cmd=script/go_test.sh
-LABEL test.publish.description="Mr. Burns Tests"
 
 COPY . $MR_BURNS_DIR
 RUN chmod u+x script/go_build.sh script/go_test.sh
