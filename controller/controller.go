@@ -94,7 +94,7 @@ func (controller Controller) startContainer(task Task) {
 			controller.publish(controller.getPublishData(testResultsFilePath, image, container))
 		}
 		controller.setTaskNextRunningTime(task)
-		log.Infof("Finish running container:%s\nNext run time: %v",
+		log.Infof("Finish running container: %s, next run time: %v",
 			container, common.MillisecondToTime(task.NextRuntimeMillisecond))
 	}()
 }
