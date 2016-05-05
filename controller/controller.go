@@ -126,6 +126,11 @@ func (controller Controller) getPublishData(testResultsFilePath string, image do
 	if len(testResults) > 0 {
 		ret = fmt.Sprintf("Container: %s\n%+v\n%s", container, image.RepoTags, testResults)
 		log.Infof(ret)
+		containerLogs, err := controller.docker.GetContainerLogs(container)
+		if err != nil {
+			ret = fmt.Sprintf("Empty container test results. Trying to fetch container's logs but failed, Error: %v (Container: %s %+v)", err, container, image.RepoTags)
+			log.Errorf(containerLogs)
+		}
 	} else {
 		containerLogs, err := controller.docker.GetContainerLogs(container)
 		if err != nil {
