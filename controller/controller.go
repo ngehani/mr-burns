@@ -128,7 +128,7 @@ func (controller Controller) getPublishData(testResultsFilePath string, image do
 		log.Infof(ret)
 		containerLogs, err := controller.docker.GetContainerLogs(container)
 		if err != nil {
-			ret = fmt.Sprintf("Empty container test results. Trying to fetch container's logs but failed, Error: %v (Container: %s %+v)", err, container, image.RepoTags)
+			ret = fmt.Sprintf("Trying to fetch container's logs but failed, Error: %v (Container: %s %+v)", err, container, image.RepoTags)
 			log.Errorf(containerLogs)
 		}
 	} else {
