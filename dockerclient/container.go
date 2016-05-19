@@ -12,6 +12,7 @@ const (
 	LABEL_TEST_RESULTS_DIR = "test.results.dir"
 	LABEL_TEST_RESULTS_FILE = "test.results.file"
 	LABEL_TEST_CMD = "test.cmd"
+	LABEL_TEST_CONTAINER_SETTINGS = "test.container.settings"
 )
 
 // NewContainer returns a new Container instance instantiated with the
