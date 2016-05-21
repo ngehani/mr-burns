@@ -5,10 +5,12 @@ import (
 	"github.com/fsouza/go-dockerclient"
 	"github.com/gaia-adm/mr-burns/dockerclient"
 	"github.com/stretchr/testify/assert"
+	"strings"
 )
 
 const (
 	IMAGE_ID string = "test-image-id"
+	RESULTS_DIR = "/src/results"
 )
 
 func TestBuildContainer(t *testing.T) {
@@ -16,19 +18,20 @@ func TestBuildContainer(t *testing.T) {
 	container := BuildContainer(getImage(getContainerSettingsMockJson()), "test-container-name")
 	assert.Equal(t, IMAGE_ID, container.Config.Image)
 	assert.Equal(t, "Effi", container.Config.User)
-	assert.NotEmpty(t, container.HostConfig.Binds)
+	assert.True(t, arrContainsSubString(container.HostConfig.Binds, RESULTS_DIR))
 }
 
 func TestBuildContainerEmptyContainerSettings(t *testing.T) {
 
 	container := BuildContainer(getImage(""), "test-container-name")
-	assert.NotEmpty(t, container.HostConfig.Binds)
+	assert.True(t, arrContainsSubString(container.HostConfig.Binds, RESULTS_DIR))
 }
 
 func getImage(containerSettingsJson string) docker.APIImages {
 
 	return docker.APIImages{ID: IMAGE_ID, Labels: map[string]string{
-		dockerclient.LABEL_TEST_CONTAINER_SETTINGS: containerSettingsJson}}
+		dockerclient.LABEL_TEST_CONTAINER_SETTINGS: containerSettingsJson,
+		dockerclient.LABEL_TEST_RESULTS_DIR: RESULTS_DIR}}
 }
 
 func getContainerSettingsMockJson() string {
@@ -77,7 +80,7 @@ func getContainerSettingsMockJson() string {
              "ResolvConfPath": "/etc/resolv.conf",
              "Volumes": {},
              "HostConfig": {
-               "Binds": null,
+               "Binds": ["/etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt"],
                "ContainerIDFile": "",
                "LxcConf": [],
                "Privileged": false,
@@ -93,4 +96,17 @@ func getContainerSettingsMockJson() string {
                "PublishAllPorts": false
              }
 	}`
+}
+
+func arrContainsSubString(arr []string, substring string) bool {
+
+	ret := false
+	for _, curr := range arr {
+		if strings.Contains(curr, substring) {
+			ret = true
+			break
+		}
+	}
+
+	return ret
 }
