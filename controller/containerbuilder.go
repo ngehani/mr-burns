@@ -34,7 +34,12 @@ func createContainerSettings(image docker.APIImages) docker.Container {
 
 func getContainerSettingsJson(image docker.APIImages) string {
 
-	return image.Labels[dockerclient.LABEL_TEST_CONTAINER_SETTINGS]
+	ret := image.Labels[dockerclient.LABEL_TEST_CONTAINER_SETTINGS]
+	if ret == "" {
+		ret = "{}"
+	}
+
+	return ret
 }
 
 func bindResultDir(containerSettings *docker.Container, image docker.APIImages, containerName string) {

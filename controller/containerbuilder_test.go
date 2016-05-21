@@ -13,14 +13,22 @@ const (
 
 func TestBuildContainer(t *testing.T) {
 
-	container := BuildContainer(getImage(), "test-container-name")
+	container := BuildContainer(getImage(getContainerSettingsMockJson()), "test-container-name")
 	assert.Equal(t, IMAGE_ID, container.Config.Image)
+	assert.Equal(t, "Effi", container.Config.User)
+	assert.NotEmpty(t, container.HostConfig.Binds)
 }
 
-func getImage() docker.APIImages {
+func TestBuildContainerEmptyContainerSettings(t *testing.T) {
+
+	container := BuildContainer(getImage(""), "test-container-name")
+	assert.NotEmpty(t, container.HostConfig.Binds)
+}
+
+func getImage(containerSettingsJson string) docker.APIImages {
 
 	return docker.APIImages{ID: IMAGE_ID, Labels: map[string]string{
-		dockerclient.LABEL_TEST_CONTAINER_SETTINGS: getContainerSettingsMockJson()}}
+		dockerclient.LABEL_TEST_CONTAINER_SETTINGS: containerSettingsJson}}
 }
 
 func getContainerSettingsMockJson() string {
@@ -32,7 +40,7 @@ func getContainerSettingsMockJson() string {
              "Args": [],
              "Config": {
                      "Hostname": "4fa6e0f0c678",
-                     "User": "",
+                     "User": "Effi",
                      "Memory": 17179869184,
                      "MemorySwap": -1,
                      "AttachStdin": false,
