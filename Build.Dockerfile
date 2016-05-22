@@ -21,7 +21,7 @@ RUN go get github.com/mitchellh/gox \
 ENV RESULT_DIR $MR_BURNS_DIR/.cover
 ENV RESULT_FILE go-results_tests.txt
 
-LABEL test=
+LABEL test=true
 LABEL test.results.dir=$RESULT_DIR
 LABEL test.results.file=$RESULT_FILE
 LABEL test.cmd=script/go_test.sh
