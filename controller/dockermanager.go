@@ -4,7 +4,6 @@ import (
 	"github.com/gaia-adm/mr-burns/dockerclient"
 	"github.com/fsouza/go-dockerclient"
 	"fmt"
-	"os"
 	log "github.com/Sirupsen/logrus"
 	"errors"
 	"path/filepath"
@@ -36,16 +35,9 @@ func (manager DockerManager) GetImages() ([]docker.APIImages, error) {
 
 func (manager DockerManager) RunTests(image docker.APIImages, containerName string) (string, error) {
 
-	containerResultsPath := image.Labels[dockerclient.LABEL_TEST_RESULTS_DIR]
-	containerCmd := image.Labels[dockerclient.LABEL_TEST_CMD]
-	resultsDirName := fmt.Sprintf("/tmp/test-results/%s_%d", containerName, common.GetTimeNowMillisecond())
-	os.MkdirAll(resultsDirName, 0700)
-	containerConfig := &docker.Config{Image: image.ID}
-	if len(containerCmd) > 0 {
-		containerConfig.Cmd = []string{containerCmd }
-	}
-	err := manager.startContainer(image, containerName, containerConfig,
-		&docker.HostConfig{Binds: []string{fmt.Sprintf("%s:%s", resultsDirName, containerResultsPath)}})
+	resultDirName := fmt.Sprintf("/tmp/test-results/%s_%d", containerName, common.GetTimeNowMillisecond())
+	container := BuildContainer(image, containerName, resultDirName)
+	err := manager.startContainer(image, container)
 	if err != nil {
 		log.Infof("Failed starting container: %s. Error: %v", containerName, err)
 		return "", err
@@ -60,19 +52,14 @@ func (manager DockerManager) RunTests(image docker.APIImages, containerName stri
 		return "", errors.New(fmt.Sprintf("Failed waiting for container: %s. Status: %v", containerName, status))
 	}
 
-	return filepath.Join(resultsDirName, image.Labels[dockerclient.LABEL_TEST_RESULTS_FILE]), nil
+	return filepath.Join(resultDirName, image.Labels[dockerclient.LABEL_TEST_RESULTS_FILE]), nil
 }
 
-func (manager DockerManager) startContainer(image docker.APIImages, containerName string, containerConfig *docker.Config, hostConfig *docker.HostConfig) error {
+func (manager DockerManager) startContainer(image docker.APIImages, container dockerclient.Container) error {
 
-	manager.client.RemoveContainer(containerName, true)
-	c := dockerclient.NewContainer(&docker.Container{
-		Name:        containerName,
-		Config:     containerConfig,
-		HostConfig: hostConfig,
-	}, &docker.Image{ID: image.ID})
+	manager.client.RemoveContainer(container.Data.Name, true)
 
-	return manager.client.StartContainer(*c)
+	return manager.client.StartContainer(container)
 }
 
 func (manager DockerManager) GetLabelImageRunningInterval(image docker.APIImages) string {

@@ -10,7 +10,6 @@ import (
 
 // A Client is the interface through which mr-burns interacts with the Docker API.
 type DockerClient interface {
-	ListContainers(opts docker.ListContainersOptions) ([]Container, error)
 	ListImages(opts docker.ListImagesOptions) ([]docker.APIImages, error)
 	StartContainer(Container) error
 	RemoveContainer(string, bool) error
@@ -33,42 +32,16 @@ func NewClient(dockerHost string) DockerClient {
 	return DockerClientWrapper{client: docker}
 }
 
-func (wrapper DockerClientWrapper) ListContainers(opts docker.ListContainersOptions) ([]Container, error) {
-
-	ret := []Container{}
-	log.Infof("Retrieving containers according to opts: %+v", opts)
-	cs, err := wrapper.client.ListContainers(opts)
-	if err != nil {
-		return nil, err
-	}
-
-	for _, container := range cs {
-		containerInfo, err := wrapper.client.InspectContainer(container.ID)
-		if err != nil {
-			return nil, err
-		}
-
-		imageInfo, err := wrapper.client.InspectImage(containerInfo.Image)
-		if err != nil {
-			return nil, err
-		}
-
-		ret = append(ret, Container{containerInfo: containerInfo, imageInfo: imageInfo})
-	}
-
-	return ret, nil
-}
-
 func (wrapper DockerClientWrapper) StartContainer(c Container) error {
 
-	log.Infof("Creating container %s", c.Name())
-	container, err := wrapper.client.CreateContainer(docker.CreateContainerOptions{c.Name(), c.Config(), c.hostConfig()})
+	log.Infof("Creating container %s", c.Data.Name)
+	container, err := wrapper.client.CreateContainer(docker.CreateContainerOptions{c.Data.Name, c.Data.Config, c.GetHostConfig()})
 	if err != nil {
 		return err
 	}
-	log.Infof("Starting container %s (%+v)", c.Name(), container)
+	log.Infof("Starting container %s (%+v)", c.Data.Name, container)
 
-	return wrapper.client.StartContainer(container.ID, c.hostConfig())
+	return wrapper.client.StartContainer(container.ID, c.GetHostConfig())
 }
 
 func (wrapper DockerClientWrapper) RemoveContainer(container string, force bool) error {
