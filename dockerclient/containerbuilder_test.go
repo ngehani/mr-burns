@@ -1,9 +1,8 @@
-package controller
+package dockerclient
 
 import (
 	"testing"
 	"github.com/fsouza/go-dockerclient"
-	"github.com/gaia-adm/mr-burns/dockerclient"
 	"github.com/stretchr/testify/assert"
 	"strings"
 )
@@ -34,8 +33,8 @@ func TestBuildContainerEmptyContainerSettings(t *testing.T) {
 func getImage(containerSettingsJson string) docker.APIImages {
 
 	return docker.APIImages{ID: IMAGE_ID, Labels: map[string]string{
-		dockerclient.LABEL_TEST_CONTAINER_SETTINGS: containerSettingsJson,
-		dockerclient.LABEL_TEST_RESULTS_DIR: RESULTS_DIR}}
+		LABEL_TEST_CONTAINER_SETTINGS: containerSettingsJson,
+		LABEL_TEST_RESULTS_DIR: RESULTS_DIR}}
 }
 
 func getContainerSettingsMockJson() string {

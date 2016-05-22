@@ -1,22 +1,21 @@
-package controller
+package dockerclient
 
 import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/fsouza/go-dockerclient"
-	"github.com/gaia-adm/mr-burns/dockerclient"
 	"fmt"
 	"os"
 	"encoding/json"
 )
 
-func BuildContainer(image docker.APIImages, containerName string, resultDirName string) dockerclient.Container {
+func BuildContainer(image docker.APIImages, containerName string, resultDirName string) Container {
 
 	ret := createContainerSettings(image)
 	ret.Name = containerName
 	bindResultDir(&ret, image, containerName)
 	bindImageId(&ret, image)
 
-	return dockerclient.NewContainer(&ret)
+	return NewContainer(&ret)
 }
 
 func createContainerSettings(image docker.APIImages) docker.Container {
@@ -34,7 +33,7 @@ func createContainerSettings(image docker.APIImages) docker.Container {
 
 func getContainerSettingsJson(image docker.APIImages) string {
 
-	ret := image.Labels[dockerclient.LABEL_TEST_CONTAINER_SETTINGS]
+	ret := image.Labels[LABEL_TEST_CONTAINER_SETTINGS]
 	if ret == "" {
 		ret = "{}"
 	}
@@ -44,7 +43,7 @@ func getContainerSettingsJson(image docker.APIImages) string {
 
 func bindResultDir(containerSettings *docker.Container, image docker.APIImages, resultDirName string) {
 
-	containerResultsPath := image.Labels[dockerclient.LABEL_TEST_RESULTS_DIR]
+	containerResultsPath := image.Labels[LABEL_TEST_RESULTS_DIR]
 	os.MkdirAll(resultDirName, 0700)
 	if (containerSettings.HostConfig == nil) {
 		containerSettings.HostConfig = &docker.HostConfig{}

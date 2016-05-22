@@ -45,6 +45,7 @@ func (c Container) RunInterval() string {
 
 	return ""
 }
+
 // Any links in the HostConfig need to be re-written before they can be
 // re-submitted to the Docker create API.
 func (c Container) GetHostConfig() *docker.HostConfig {

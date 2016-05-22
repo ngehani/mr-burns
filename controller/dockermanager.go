@@ -36,7 +36,7 @@ func (manager DockerManager) GetImages() ([]docker.APIImages, error) {
 func (manager DockerManager) RunTests(image docker.APIImages, containerName string) (string, error) {
 
 	resultDirName := fmt.Sprintf("/tmp/test-results/%s_%d", containerName, common.GetTimeNowMillisecond())
-	container := BuildContainer(image, containerName, resultDirName)
+	container := dockerclient.BuildContainer(image, containerName, resultDirName)
 	err := manager.startContainer(image, container)
 	if err != nil {
 		log.Infof("Failed starting container: %s. Error: %v", containerName, err)
