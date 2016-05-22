@@ -33,7 +33,7 @@ func createContainerSettings(image docker.APIImages) docker.Container {
 
 func getContainerSettingsJson(image docker.APIImages) string {
 
-	ret := image.Labels[LABEL_TEST_CONTAINER_SETTINGS]
+	ret := ContainerSettings(image)
 	if ret == "" {
 		ret = "{}"
 	}
@@ -43,7 +43,7 @@ func getContainerSettingsJson(image docker.APIImages) string {
 
 func bindResultDir(containerSettings *docker.Container, image docker.APIImages, resultDirName string) {
 
-	containerResultsPath := image.Labels[LABEL_TEST_RESULTS_DIR]
+	containerResultsPath := ResultsDir(image)
 	os.MkdirAll(resultDirName, 0700)
 	if (containerSettings.HostConfig == nil) {
 		containerSettings.HostConfig = &docker.HostConfig{}

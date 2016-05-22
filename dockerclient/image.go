@@ -12,5 +12,25 @@ const (
 
 func RunInterval(image docker.APIImages) string {
 
-	return image.Labels[LABEL_TEST_RUN_INTERVAL]
+	return getLabel(image, LABEL_TEST_RUN_INTERVAL)
+}
+
+func ResultsDir(image docker.APIImages) string {
+
+	return getLabel(image, LABEL_TEST_RESULTS_DIR)
+}
+
+func ResultsFile(image docker.APIImages) string {
+
+	return getLabel(image, LABEL_TEST_RESULTS_FILE)
+}
+
+func ContainerSettings(image docker.APIImages) string {
+
+	return getLabel(image, LABEL_TEST_CONTAINER_SETTINGS)
+}
+
+func getLabel(image docker.APIImages, label string) string {
+
+	return image.Labels[label]
 }

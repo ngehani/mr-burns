@@ -22,8 +22,9 @@ func NewDockerManager(dockerClient dockerclient.DockerClient) DockerManager {
 
 func (manager DockerManager) GetImages() ([]docker.APIImages, error) {
 
+	const FILTER_TEST_LABEL = fmt.Sprintf("%s=true", dockerclient.LABEL_TEST)
 	images, err := manager.client.ListImages(
-		docker.ListImagesOptions{All: false, Filters: map[string][]string{"label": {"test="}, "dangling": {"false"}}})
+		docker.ListImagesOptions{All: false, Filters: map[string][]string{"label": {FILTER_TEST_LABEL}, "dangling": {"false"}}})
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +53,7 @@ func (manager DockerManager) RunTests(image docker.APIImages, containerName stri
 		return "", errors.New(fmt.Sprintf("Failed waiting for container: %s. Status: %v", containerName, status))
 	}
 
-	return filepath.Join(resultDirName, image.Labels[dockerclient.LABEL_TEST_RESULTS_FILE]), nil
+	return filepath.Join(resultDirName, dockerclient.ResultsFile(image)), nil
 }
 
 func (manager DockerManager) startContainer(image docker.APIImages, container dockerclient.Container) error {
