@@ -15,9 +15,9 @@ func NewMockClient() *MockClient {
 	return &MockClient{}
 }
 
-func (client *MockClient) CreateMockClientWrapper() DockerClientWrapper {
+func (client *MockClient) CreateMockClientWrapper() DockerClient {
 
-	return DockerClientWrapper{client: client}
+	return DockerClient{client: client}
 }
 
 func (client *MockClient) Endpoint() string {
