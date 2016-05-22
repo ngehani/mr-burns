@@ -35,13 +35,13 @@ func NewClient(dockerHost string) DockerClient {
 func (wrapper DockerClientWrapper) StartContainer(c Container) error {
 
 	log.Infof("Creating container %s", c.Data.Name)
-	container, err := wrapper.client.CreateContainer(docker.CreateContainerOptions{c.Data.Name, c.Data.Config, c.GetHostConfig()})
+	container, err := wrapper.client.CreateContainer(docker.CreateContainerOptions{c.Data.Name, c.Data.Config, c.HostConfig()})
 	if err != nil {
 		return err
 	}
 	log.Infof("Starting container %s (%+v)", c.Data.Name, container)
 
-	return wrapper.client.StartContainer(container.ID, c.GetHostConfig())
+	return wrapper.client.StartContainer(container.ID, c.HostConfig())
 }
 
 func (wrapper DockerClientWrapper) RemoveContainer(container string, force bool) error {

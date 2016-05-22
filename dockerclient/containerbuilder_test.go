@@ -19,7 +19,7 @@ func TestBuildContainer(t *testing.T) {
 	assert.Equal(t, IMAGE_ID, container.Data.Config.Image)
 	assert.Equal(t, "Effi", container.Data.Config.User)
 	assert.Equal(t, CONTAINER_NAME, container.Data.Name)
-	assert.True(t, arrContainsSubString(container.GetHostConfig().Binds, RESULTS_DIR))
+	assert.True(t, arrContainsSubString(container.HostConfig().Binds, RESULTS_DIR))
 }
 
 func TestBuildContainerEmptyContainerSettings(t *testing.T) {
@@ -27,7 +27,7 @@ func TestBuildContainerEmptyContainerSettings(t *testing.T) {
 	const CONTAINER_NAME = "test-container-name"
 	container := BuildContainer(getImage(""), CONTAINER_NAME, RESULTS_DIR)
 	assert.Equal(t, CONTAINER_NAME, container.Data.Name)
-	assert.True(t, arrContainsSubString(container.GetHostConfig().Binds, RESULTS_DIR))
+	assert.True(t, arrContainsSubString(container.HostConfig().Binds, RESULTS_DIR))
 }
 
 func getImage(containerSettingsJson string) docker.APIImages {

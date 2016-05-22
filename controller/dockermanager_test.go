@@ -63,7 +63,7 @@ func mockListImagesRepoTags(mockClient *dockerclient.MockClient, imageId string,
 	labels := map[string]string{
 		dockerclient.LABEL_TEST_RESULTS_DIR: "/tmp/test-results",
 		dockerclient.LABEL_TEST_RESULTS_FILE: MOCK_TEST_RESULTS_FILE_NAME,
-		dockerclient.LABEL_INTERVAL: "600000"}
+		dockerclient.LABEL_TEST_RUN_INTERVAL: "600000"}
 	ret := docker.APIImages{ID: imageId, Labels: labels, RepoTags: []string{repoTags}}
 	mockClient.On("ListImages", mock.Anything).Return([]docker.APIImages{ret}, nil)
 

@@ -9,6 +9,7 @@ import (
 	"strings"
 	"github.com/gaia-adm/mr-burns/common"
 	"fmt"
+	"github.com/gaia-adm/mr-burns/dockerclient"
 )
 
 type Controller struct {
@@ -107,7 +108,7 @@ func (controller Controller) update(task Task) {
 func (controller Controller) setTaskNextRunningTime(task Task) {
 
 	image := task.Data.(docker.APIImages)
-	imageInterval := controller.docker.GetLabelImageRunningInterval(image)
+	imageInterval := dockerclient.RunInterval(image)
 	if (len(imageInterval) > 0) {
 		interval, _ := strconv.ParseInt(imageInterval, 10, 64)
 		task.NextRuntimeMillisecond = common.GetTimeNowMillisecond() + interval
