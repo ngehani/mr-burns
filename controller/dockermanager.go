@@ -22,9 +22,10 @@ func NewDockerManager(dockerClient dockerclient.DockerClient) DockerManager {
 
 func (manager DockerManager) GetImages() ([]docker.APIImages, error) {
 
-	const FILTER_TEST_LABEL = fmt.Sprintf("%s=true", dockerclient.LABEL_TEST)
 	images, err := manager.client.ListImages(
-		docker.ListImagesOptions{All: false, Filters: map[string][]string{"label": {FILTER_TEST_LABEL}, "dangling": {"false"}}})
+		docker.ListImagesOptions{All: false, Filters: map[string][]string{
+			"label": {fmt.Sprintf("%s=true", dockerclient.LABEL_TEST)},
+			"dangling": {"false"}}})
 	if err != nil {
 		return nil, err
 	}
