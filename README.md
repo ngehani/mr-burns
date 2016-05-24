@@ -32,12 +32,12 @@ LABEL test.run.interval=300000
 By default, Mr. Burns looks for all hosts' images that contains _test=true_ label in the _Dockerfile_ and runs them as a Docker container.
 
 If you want to run only specific images, add `TEST_IMAGES=[image-name-1,image-name2...]` as an environment variable. 
-## Running Mr. Burns inside a Docker container:
+## Running Mr. Burns inside a Docker container
 If you use Mr. Burns Docker [image](https://hub.docker.com/r/gaiaadm/mr-burns/) on Linux, use the following command:
 ```bash
 docker run -d --name burns --log-driver=json-file -v /var/run/docker.sock:/var/run/docker.sock -v /tmp:/tmp gaiaadm/mr-burns
 ```
-## Running Mr. Burns on CoreOS cluster:
+## Running Mr. Burns on CoreOS cluster
 If you are running a CoreOS cluster, you can use the `fleetctl` command to deploy Mr. Burns service file on every CoreOS cluster node.
 ```
 $ fleetctl start mr-burns.service
