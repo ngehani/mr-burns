@@ -39,7 +39,6 @@ docker run -d --name burns --log-driver=json-file -v /var/run/docker.sock:/var/r
 ```
 ## Running Mr. Burns on CoreOS cluster
 If you are running a CoreOS cluster, you can use `fleetctl` command to deploy Mr. Burns service file on every CoreOS cluster node.
-You'll then be able to deploy Mr. Burns service with the command
 ```
 $ fleetctl start mr-burns.service
 ```
