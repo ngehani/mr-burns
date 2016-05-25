@@ -126,15 +126,15 @@ func (controller Controller) getPublishData(testResultsFilePath string, image do
 	testResults := controller.getResults(testResultsFilePath)
 	if len(testResults) > 0 {
 		ret = fmt.Sprintf("Container: %s\n%+v\n%s", container, image.RepoTags, testResults)
-		log.Infof(ret)
+		log.Info(ret)
 	} else {
 		containerLogs, err := controller.docker.GetContainerLogs(container)
 		if err != nil {
 			ret = fmt.Sprintf("Empty container test results. Trying to fetch container's logs but failed, Error: %v (Container: %s %+v)", err, container, image.RepoTags)
-			log.Errorf(ret)
+			log.Error(ret)
 		} else {
 			ret = fmt.Sprintf("Container: %s\n%+v\nEmpty Test Results, Logs:\n%s", container, image.RepoTags, containerLogs)
-			log.Infof(ret)
+			log.Info(ret)
 		}
 	}
 
@@ -145,7 +145,7 @@ func getTestResults(testResultsFilePath string) string {
 
 	testResults, err := ioutil.ReadFile(testResultsFilePath)
 	if err != nil {
-		log.Error("Failed to read test results file.", err, testResultsFilePath)
+		log.Error("Failed to read test results file. ", err, testResultsFilePath)
 		testResults = []byte("")
 	}
 

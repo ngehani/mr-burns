@@ -50,7 +50,7 @@ func (manager DockerManager) RunTests(image docker.APIImages, containerName stri
 		log.Error("Failed waiting for container: %s. Error: %v", containerName, err)
 		return "", err
 	}
-	log.Infof("Finish wating for container: %s, status: %d", containerName, status)
+	log.Infof("Finish waiting for container: %s, status: %d", containerName, status)
 	if status != 0 {
 		return "", errors.New(fmt.Sprintf("Failed waiting for container: %s. Status: %v", containerName, status))
 	}
