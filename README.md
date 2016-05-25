@@ -27,6 +27,7 @@ LABEL test.container.settings={\"Config\":{\"Env\":[\"gaiaUrl=master.gaiahub.io\
 LABEL test.results.dir=/src/results
 LABEL test.results.file=TestSuite.txt
 LABEL test.run.interval=300000
+LABEL test.use.latest=true
 ```
 ## Running Mr. Burns
 By default, Mr. Burns looks for all hosts' images that contains _test=true_ label in the _Dockerfile_ and runs them as a Docker container.
