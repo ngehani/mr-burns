@@ -4,7 +4,6 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/fsouza/go-dockerclient"
 	"fmt"
-	"os"
 	"encoding/json"
 )
 
@@ -44,7 +43,6 @@ func getContainerSettingsJson(image docker.APIImages) string {
 func bindResultDir(containerSettings *docker.Container, image docker.APIImages, resultDirName string) {
 
 	containerResultsPath := ResultsDir(image)
-	os.MkdirAll(resultDirName, 0700)
 	if (containerSettings.HostConfig == nil) {
 		containerSettings.HostConfig = &docker.HostConfig{}
 	}

@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 	"github.com/gaia-adm/mr-burns/common"
+	"os"
 )
 
 type DockerManager struct {
@@ -37,7 +38,7 @@ func (manager DockerManager) GetImages() ([]docker.APIImages, error) {
 
 func (manager DockerManager) RunTests(image docker.APIImages, containerName string) (string, error) {
 
-	resultDirName := fmt.Sprintf("/tmp/test-results/%s_%d", containerName, common.GetTimeNowMillisecond())
+	resultDirName := createResultDir(containerName)
 	container := dockerclient.BuildContainer(image, containerName, resultDirName)
 	err := manager.startContainer(image, container)
 	if err != nil {
@@ -81,6 +82,18 @@ func dangling(images []docker.APIImages) []docker.APIImages {
 		if !strings.Contains(currImage.RepoTags[0], "<none>") {
 			ret = append(ret, currImage)
 		}
+	}
+
+	return ret
+}
+
+func createResultDir(container string) string {
+
+	ret := fmt.Sprintf("/tmp/test-results/%s_%d", container, common.GetTimeNowMillisecond())
+	err := os.MkdirAll(ret, 0700)
+	if err != nil {
+		log.Errorf("Failed to create test results folder: %s. Error: %v", ret, err)
+		panic(err)
 	}
 
 	return ret
