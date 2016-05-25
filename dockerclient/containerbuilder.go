@@ -11,7 +11,7 @@ func BuildContainer(image docker.APIImages, containerName string, resultDirName 
 
 	ret := createContainerSettings(image)
 	ret.Name = containerName
-	bindResultDir(&ret, image, containerName)
+	bindResultDir(&ret, image, resultDirName)
 	bindImageId(&ret, image)
 
 	return NewContainer(&ret)
@@ -50,7 +50,6 @@ func bindResultDir(containerSettings *docker.Container, image docker.APIImages, 
 		containerSettings.HostConfig.Binds = []string{}
 	}
 	containerSettings.HostConfig.Binds = append(containerSettings.HostConfig.Binds, fmt.Sprintf("%s:%s", resultDirName, containerResultsPath))
-	log.Info("Effi *** containerSettings.HostConfig.Binds: ", containerSettings.HostConfig.Binds)
 }
 
 func bindImageId(containerSettings *docker.Container, image docker.APIImages) {
