@@ -73,7 +73,7 @@ func (controller Controller) initialize() {
 
 	images, err := controller.docker.GetImages()
 	if err != nil {
-		log.Infof("Failed to get docker images. Error: %v", err)
+		log.Fatalf("Failed to get docker images. Error: %v", err)
 	}
 
 	for _, currImage := range images {
@@ -90,7 +90,7 @@ func (controller Controller) startContainer(task Task) {
 		container := getContainerName(image)
 		testResultsFilePath, err := controller.docker.RunTests(image, container)
 		if err != nil {
-			log.Infof("Error while trying to run tests from image: %v. Error: %v", image, err)
+			log.Errorf("Error while trying to run tests from image: %v. Error: %v", image, err)
 		} else {
 			controller.publish(controller.getPublishData(testResultsFilePath, image, container))
 		}

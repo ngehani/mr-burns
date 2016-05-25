@@ -42,7 +42,7 @@ func (manager DockerManager) RunTests(image docker.APIImages, containerName stri
 	container := dockerclient.BuildContainer(image, containerName, resultDirName)
 	err := manager.startContainer(image, container)
 	if err != nil {
-		log.Infof("Failed starting container: %s. Error: %v", containerName, err)
+		log.Error("Failed starting container: %s. Error: %v", containerName, err)
 		return "", err
 	}
 	status, err := manager.client.WaitContainer(containerName)
@@ -92,8 +92,7 @@ func createResultDir(container string) string {
 	ret := fmt.Sprintf("/tmp/test-results/%s_%d", container, common.GetTimeNowMillisecond())
 	err := os.MkdirAll(ret, 0700)
 	if err != nil {
-		log.Errorf("Failed to create test results folder: %s. Error: %v", ret, err)
-		panic(err)
+		log.Fatalf("Failed to create test results folder: %s. Error: %v", ret, err)
 	}
 
 	return ret
