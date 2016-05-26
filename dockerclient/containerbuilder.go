@@ -5,12 +5,15 @@ import (
 	"github.com/fsouza/go-dockerclient"
 	"fmt"
 	"encoding/json"
+	"strings"
+	"github.com/gaia-adm/mr-burns/common"
 )
 
 func BuildContainer(image docker.APIImages, containerName string, resultDirName string) Container {
 
 	ret := createContainerSettings(image)
 	ret.Name = containerName
+	bindEnv(&ret, image)
 	bindResultDir(&ret, image, resultDirName)
 	bindImageId(&ret, image)
 
@@ -38,6 +41,21 @@ func getContainerSettingsJson(image docker.APIImages) string {
 	}
 
 	return ret
+}
+
+func bindEnv(containerSettings *docker.Container, image docker.APIImages) {
+
+	file := EnvFile(image)
+	if file != "" {
+		common.ReadFile(file, func(line string) {
+			appendConfigEnv(containerSettings, line)
+		})
+	}
+}
+
+func appendConfigEnv(containerSettings *docker.Container, envVar string) {
+
+	containerSettings.Config.Env = append(containerSettings.Config.Env, strings.Replace(envVar, "=", ":", -1))
 }
 
 func bindResultDir(containerSettings *docker.Container, image docker.APIImages, resultDirName string) {
