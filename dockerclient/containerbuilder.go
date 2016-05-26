@@ -55,7 +55,7 @@ func bindEnv(containerSettings *docker.Container, image docker.APIImages) {
 
 func appendConfigEnv(containerSettings *docker.Container, envVar string) {
 
-	containerSettings.Config.Env = append(containerSettings.Config.Env, strings.Replace(envVar, "=", ":", -1))
+	containerSettings.Config.Env = append(containerSettings.Config.Env, envVar)
 }
 
 func bindResultDir(containerSettings *docker.Container, image docker.APIImages, resultDirName string) {
