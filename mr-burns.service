@@ -38,10 +38,11 @@ RestartSec=20s
 ExecStartPre=-/usr/bin/docker stop mr-burns
 ExecStartPre=-/usr/bin/docker rm mr-burns
 
-ExecStart=/usr/bin/docker run \
+ExecStart=/bin/bash -a -c 'docker run  \
 --name mr-burns \
+--log-driver=json-file \
 -v /var/run/docker.sock:/var/run/docker.sock \
-gaiaadm/mr-burns
+gaiaadm/mr-burns'
 
 # Stop
 ExecStop=/usr/bin/docker stop mr-burns
