@@ -17,8 +17,8 @@ const (
 func TestBuildContainer(t *testing.T) {
 
 	const CONTAINER_NAME = "test-container-name"
-	d1 := []byte(ENV_VAR)
-	err := ioutil.WriteFile("test.env", d1, 0644)
+	data := []byte(ENV_VAR)
+	err := ioutil.WriteFile("test.env", data, 0644)
 	if err != nil {
 		panic(err)
 	}

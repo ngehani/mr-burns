@@ -42,7 +42,8 @@ ExecStart=/bin/bash -a -c 'docker run  \
 --name mr-burns \
 --log-driver=json-file \
 -v /var/run/docker.sock:/var/run/docker.sock \
--v /tmp:/tmp
+-v /tmp:/tmp \
+-v /etc/environment:/etc/environment \
 gaiaadm/mr-burns'
 
 # Stop
