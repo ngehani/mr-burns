@@ -44,7 +44,6 @@ func getContainerSettingsJson(image docker.APIImages) string {
 func bindEnv(containerSettings *docker.Container, image docker.APIImages) {
 
 	file := EnvFile(image)
-	log.Infof("About to bind host Env file %s", file)
 	if file != "" {
 		if (containerSettings.Config == nil) {
 			containerSettings.Config = &docker.Config{}
@@ -52,7 +51,6 @@ func bindEnv(containerSettings *docker.Container, image docker.APIImages) {
 		common.ReadFile(file, func(line string) {
 			appendConfigEnv(containerSettings, line)
 		})
-		log.Infof("Config env: %+v", containerSettings.Config.Env)
 	}
 }
 
