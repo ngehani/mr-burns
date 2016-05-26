@@ -37,6 +37,8 @@ If you use Mr. Burns Docker [image](https://hub.docker.com/r/gaiaadm/mr-burns/) 
 ```bash
 docker run -d --name burns --log-driver=json-file -v /var/run/docker.sock:/var/run/docker.sock -v /tmp:/tmp gaiaadm/mr-burns
 ```
+
+To integrate mr burns with the distributor. add this: `--link <container name>:distributor.skydns.local` to the docker run command line
 ### Running Mr. Burns on CoreOS cluster
 If you are running a CoreOS cluster, you can use the `fleetctl` command to deploy Mr. Burns service file on every CoreOS cluster node.
 ```
