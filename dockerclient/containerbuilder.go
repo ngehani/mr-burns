@@ -25,8 +25,7 @@ func createContainerSettings(image docker.APIImages) docker.Container {
 	var ret docker.Container
 	err := json.Unmarshal([]byte(containerSettingsJson), &ret)
 	if err != nil {
-		log.Errorf("Failed to create container from 'test.container.settings' label. Check JSON format, for detailed format look at https://docs.docker.com/reference/api/docker_remote_api_v1.16/#create-a-container (%s)", containerSettingsJson)
-		panic(err)
+		log.Fatalf("Failed to create container from 'test.container.settings' label. Check JSON format, for detailed format look at https://docs.docker.com/reference/api/docker_remote_api_v1.16/#create-a-container (%s)", containerSettingsJson)
 	}
 
 	return ret
