@@ -5,7 +5,6 @@ import (
 	"github.com/fsouza/go-dockerclient"
 	"fmt"
 	"encoding/json"
-	"strings"
 	"github.com/gaia-adm/mr-burns/common"
 )
 
