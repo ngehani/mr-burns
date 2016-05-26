@@ -125,7 +125,7 @@ func (controller Controller) getPublishData(testResultsFilePath string, image do
 	var ret string
 	testResults := controller.getResults(testResultsFilePath)
 	if len(testResults) > 0 {
-		ret = fmt.Sprintf("Container: %s\n%+v\n%s", container, image.RepoTags, testResults)
+		ret = fmt.Sprintf("%+v\n%s", image.RepoTags, testResults)
 		log.Info(ret)
 	} else {
 		containerLogs, err := controller.docker.GetContainerLogs(container)
