@@ -11,7 +11,7 @@ For more details, see [Docker Remote API](https://docs.docker.com/reference/api/
 * **_test.results.dir_** (mandatory) is where your tests results are stored.
 When you finish running your tests, Mr. Burns will copy this folder into the host's folder under the directory /tmp/test-results/<container-name_timestamp>.
 
-* **_test.results.file_** (mandatory) is the test results file to publish for applications such as HPE ALM, HPE NGA, and Slack.
+* **_test.results.file_** (mandatory) is the test results file to publish for applications such as [HPE ALM Octane](http://octane-help.saas.hpe.com/en/Latest/Online/Content/Resources/_TopNav/_TopNav_Home.htm) and Slack.
 
 * **_test.run.interval_** (optional) if you want to run your container recurrently, set the time interval to be between when it finishes running to when it starts over.
 
